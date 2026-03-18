@@ -1,105 +1,108 @@
-<script>
-    // --- SISTEMA DE ÁUDIO (WEB AUDIO API) ---
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Paperman: The 15 Bosses Challenge</title>
+    <style>
+        body { margin: 0; background: #2c3e50; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; display: flex; justify-content: center; }
+        canvas { background: #ecf0f1; border: 6px solid #95a5a6; cursor: crosshair; margin-top: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        /* HUD */
+        .hud { position: absolute; top: 40px; left: 40px; pointer-events: none; color: #2c3e50; background: rgba(255,255,255,0.9); padding: 15px; border-radius: 8px; z-index: 10; border-left: 5px solid #2980b9; min-width: 180px; }
+        .lives { color: #e74c3c; font-size: 24px; margin-top: 5px; font-family: serif; }
+        .timer { font-family: monospace; font-weight: bold; font-size: 18px; color: #2980b9; }
+        .best-time { font-size: 12px; color: #7f8c8d; margin-bottom: 5px; }
 
-    function playShootSound() {
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(400, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 0.1);
-        
-        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-        
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.1);
-    }
+        /* Boss UI */
+        #bossUI { position: absolute; top: 40px; width: 450px; text-align: center; z-index: 5; }
+        .hp-bg { width: 100%; height: 15px; background: #bdc3c7; border-radius: 10px; overflow: hidden; border: 2px solid #2c3e50; }
+        #hp-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #ff4d4d, #c0392b); transition: width 0.2s; }
+        #bossName { color: #c0392b; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; font-size: 20px; text-shadow: 1px 1px 0 #fff; }
 
-    function playMetalHitSound() {
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(800, audioCtx.currentTime);
-        osc.frequency.linearRampToValueAtTime(1200, audioCtx.currentTime + 0.05);
-        
-        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
-        
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.2);
-    }
-
-    function playPaperRipSound() {
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const bufferSize = audioCtx.sampleRate * 0.1;
-        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-        const data = buffer.getChannelData(0);
-        
-        for (let i = 0; i < bufferSize; i++) {
-            data[i] = Math.random() * 2 - 1;
+        /* Game Over Overlay */
+        #gameOverOverlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8); display: none; justify-content: center; align-items: center; z-index: 100;
         }
-        
-        const noise = audioCtx.createBufferSource();
-        noise.buffer = buffer;
-        const filter = audioCtx.createBiquadFilter();
-        filter.type = 'bandpass';
-        filter.frequency.value = 1000;
-        
-        const gain = audioCtx.createGain();
-        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-        
-        noise.connect(filter);
-        filter.connect(gain);
-        gain.connect(audioCtx.destination);
-        
-        noise.start();
-    }
-
-    // --- INTEGRAÇÃO COM A LÓGICA EXISTENTE ---
-
-    // No window.onmousedown:
-    window.onmousedown = (e) => {
-        if (isDead || isPaused) return;
-        const rect = canvas.getBoundingClientRect();
-        const angle = Math.atan2((e.clientY - rect.top) - (player.y + 25), (e.clientX - rect.left) - (player.x + 20));
-        bullets.push({ x: player.x + 20, y: player.y + 25, vx: Math.cos(angle) * 12, vy: Math.sin(angle) * 12 });
-        playShootSound(); // Toca ao atirar
-    };
-
-    // Na função takeDamage():
-    function takeDamage() {
-        if (invencible > 0 || isDead || isPaused) return;
-        hp--; 
-        updateLivesUI();
-        playPaperRipSound(); // Som de papel rasgando ao levar dano
-        createExplosion(player.x + 20, player.y + 25, "#ff7675", 10);
-        // ... resto do código de morte
-    }
-
-    // Na função update(), dentro da colisão das balas com o Boss:
-    bullets.forEach((b, i) => {
-        b.x += b.vx; b.y += b.vy;
-        if(b.x > boss.x && b.x < boss.x + boss.w && b.y > boss.y && b.y < boss.y + boss.h) {
-            boss.hp -= 10; 
-            bullets.splice(i, 1);
-            playMetalHitSound(); // Som metálico ao atingir o boss
-            createExplosion(b.x, b.y, "#dfe6e9", 5);
-            document.getElementById('hp-fill').style.width = (boss.hp / boss.maxHp * 100) + "%";
+        .torn-paper {
+            background: #fdfdfd; padding: 40px; width: 400px; text-align: center; position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            clip-path: polygon(0% 5%, 15% 0%, 30% 7%, 45% 2%, 60% 8%, 75% 3%, 90% 9%, 100% 4%, 98% 95%, 85% 100%, 70% 93%, 55% 98%, 40% 92%, 25% 97%, 10% 91%, 0% 96%);
         }
-        // ...
-    });
+        .torn-paper h1 { color: #2d3436; font-size: 3rem; margin: 0; font-family: 'Courier New', Courier, monospace; }
+        .retry-btn { background: #fab1a0; border: 2px dashed #ff7675; padding: 10px 30px; font-size: 1.5rem; cursor: pointer; margin-top: 20px; transition: 0.2s; }
+        .retry-btn:hover { transform: scale(1.1) rotate(-2deg); background: #ff7675; }
+    </style>
+</head>
+<body>
 
-    // ... (Mantenha o resto das funções draw, initLevel, etc.)
-</script>
+    <div id="gameOverOverlay">
+        <div class="torn-paper">
+            <h1>GAME OVER</h1>
+            <p style="color: #636e72">O Paperman foi amassado...</p>
+            <button class="retry-btn" onclick="retryGame()">TENTAR DE NOVO</button>
+        </div>
+    </div>
+
+    <div class="hud">
+        <div class="best-time">Recorde: <span id="bestDisplay">--:--</span></div>
+        <div class="timer" id="timeDisplay">00:00</div>
+        <hr>
+        <b>PAPELMAN</b><br>
+        Nível: <span id="lvlTxt">1</span>/15<br>
+        <div class="lives" id="livesDisplay"></div>
+        <small style="color: #666;">ESC: Pausar | Clique: Atirar</small>
+    </div>
+
+    <div id="bossUI">
+        <div id="bossName">Chefão</div>
+        <div class="hp-bg"><div id="hp-fill"></div></div>
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 900; canvas.height = 650;
+
+        let level = 1, hp = 6, isDead = false, isPaused = false, invencible = 0;
+        let startTime, totalPausedTime = 0, pauseStart = 0, musicStarted = false;
+        const player = { x: 450, y: 550, w: 40, h: 55, speed: 6 };
+        let bullets = [], particles = [], bossProjectiles = [], boss = null;
+        const keys = {};
+
+        // --- AUDIO ENGINE ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(freq, type, duration, vol, slide = false) {
+            const osc = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            if(slide) osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + duration);
+            g.gain.setValueAtTime(vol, audioCtx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+            osc.connect(g); g.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + duration);
+        }
+
+        let beat = 0;
+        function startMusic() {
+            if(musicStarted) return; musicStarted = true;
+            setInterval(() => {
+                if(isPaused || isDead) return;
+                if(beat % 2 === 0) playSound(110, 'sine', 0.4, 0.1); 
+                if(Math.random() > 0.6) playSound([440, 523, 587][Math.floor(Math.random()*3)], 'triangle', 0.2, 0.05);
+                beat = (beat + 1) % 4;
+            }, 250);
+        }
+
+        // --- BOSS DATA & SKINS ---
+        const bossSkins = [
+            { name: "Clipe de Aço", draw: (b) => { ctx.strokeStyle = "#7f8c8d"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(b.x+20, b.y+20); ctx.lineTo(b.x+80, b.y+20); ctx.arc(b.x+80, b.y+50, 30, -Math.PI/2, Math.PI/2); ctx.lineTo(b.x+40, b.y+80); ctx.arc(b.x+40, b.y+55, 25, Math.PI/2, -Math.PI/2, true); ctx.stroke(); }},
+            { name: "Borracha", draw: (b) => { ctx.fillStyle = "#ff7979"; ctx.fillRect(b.x, b.y, 100, 60); ctx.fillStyle="#badc58"; ctx.fillRect(b.x+70, b.y, 30, 60); }},
+            { name: "Apontador", draw: (b) => { ctx.fillStyle = "#95a5a6"; ctx.fillRect(b.x, b.y, 80, 80); ctx.fillStyle="#34495e"; ctx.beginPath(); ctx.arc(b.x+40, b.y+40, 20, 0, Math.PI*2); ctx.fill(); }},
+            { name: "Régua Justiceira", draw: (b) => { ctx.fillStyle = "#bdc3c7"; ctx.fillRect(b.x, b.y, 100, 30); ctx.fillStyle="#000"; for(let i=0; i<100; i+=10) ctx.fillRect(b.x+i, b.y, 2, 10); }},
+            { name: "Grampeador", draw: (b) => { ctx.fillStyle = "#2c3e50"; ctx.fillRect(b.x, b.y, 100, 40); ctx.fillRect(b.x, b.y+40, 40, 20); }},
+            { name: "Perfurador", draw: (b) => { ctx.fillStyle = "#7f8c8d"; ctx.fillRect(b.x, b.y+40, 100, 20); ctx.fillRect(b.x+20, b.y, 20, 40); ctx.fillRect(b.x+60, b.y, 20, 40); }},
+            { name: "Tesoura Afiada", draw: (b) => { ctx.strokeStyle = "#34495e"; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(b.x, b.y);
