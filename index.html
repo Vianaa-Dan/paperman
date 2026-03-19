@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Paperman: The Artisanal Magnum Opus</title>
+    <title>Paperman: Artisanal Magnum Opus - Collision Fixed</title>
     <style>
         body { margin: 0; background: #1a1a1a; color: white; font-family: 'Courier New', monospace; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100vh; }
         canvas { background: #fefdf5; border: 8px solid #95a5a6; cursor: crosshair; box-shadow: 0 20px 50px rgba(0,0,0,0.7); }
@@ -61,7 +61,6 @@
         const camera = { x: 0, y: 0 };
         let bullets = [], bossProjectiles = [], items = [], obstacles = [], boss = null, keys = {};
 
-        // --- SISTEMA DE ÁUDIO ---
         function playSfx(f, t, d, v, s=false) {
             if (!audioCtx || audioCtx.state !== 'running') return;
             const o = audioCtx.createOscillator(), g = audioCtx.createGain();
@@ -71,20 +70,19 @@
             o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + d);
         }
 
-        // --- TIROS PERSONALIZADOS DOS CHEFÕES ---
+        // --- TIROS PERSONALIZADOS ---
         function drawBossBullet(p, lvl) {
-            ctx.save();
-            ctx.translate(p.x, p.y);
-            if(lvl === 1 || lvl === 6 || lvl === 13) { // Metal
+            ctx.save(); ctx.translate(p.x, p.y);
+            if([1,6,13].includes(lvl)) {
                 let g = ctx.createRadialGradient(-3,-3,1,0,0,10); g.addColorStop(0,"#fff"); g.addColorStop(1,"#7f8c8d");
                 ctx.fillStyle=g; ctx.beginPath(); ctx.arc(0,0,10,0,7); ctx.fill();
-            } else if(lvl === 2) { // Borracha
+            } else if(lvl === 2) {
                 ctx.fillStyle="#ff7675"; ctx.fillRect(-8,-5,16,10);
-            } else if(lvl === 3 || lvl === 10) { // Lâmina
+            } else if([3,10].includes(lvl)) {
                 ctx.rotate(Date.now()*0.01); ctx.fillStyle="#bdc3c7"; ctx.beginPath(); ctx.moveTo(-15,0); ctx.lineTo(0,-5); ctx.lineTo(15,0); ctx.lineTo(0,5); ctx.fill();
-            } else if(lvl === 5 || lvl === 14) { // Papel/Cola
+            } else if([5,14].includes(lvl)) {
                 ctx.fillStyle="white"; ctx.fillRect(-2,-10,4,20);
-            } else if(lvl === 15) { // Erro
+            } else if(lvl === 15) {
                 ctx.shadowBlur=15; ctx.shadowColor="red"; ctx.fillStyle="red"; ctx.beginPath(); ctx.arc(0,0,12,0,7); ctx.fill();
             } else {
                 ctx.fillStyle="orange"; ctx.fillRect(-6,-6,12,12);
@@ -92,22 +90,19 @@
             ctx.restore();
         }
 
-        // --- POWER-UPS ARTISANAIS ---
+        // --- POWER-UPS ---
         function drawPowerUp(it) {
-            ctx.save();
-            ctx.translate(it.x, it.y);
-            ctx.shadowBlur = 10; ctx.shadowColor = "white";
-            if(it.type === "heal") { // Coração
+            ctx.save(); ctx.translate(it.x, it.y); ctx.shadowBlur = 10; ctx.shadowColor = "white";
+            if(it.type === "heal") {
                 ctx.fillStyle="#e74c3c"; ctx.beginPath(); ctx.moveTo(0,10); ctx.bezierCurveTo(-15,-5,-15,-20,0,-20); ctx.bezierCurveTo(15,-20,15,-5,0,10); ctx.fill();
-            } else if(it.type === "strength") { // Punho
+            } else if(it.type === "strength") {
                 ctx.fillStyle="#c0392b"; ctx.fillRect(-15,-15,30,30); ctx.fillStyle="white"; ctx.fillRect(-10,-10,5,10); ctx.fillRect(-2,-10,5,10); ctx.fillRect(6,-10,5,10);
-            } else { // Raio
+            } else {
                 ctx.fillStyle="#f1c40f"; ctx.beginPath(); ctx.moveTo(0,-20); ctx.lineTo(-15,5); ctx.lineTo(0,5); ctx.lineTo(-5,20); ctx.lineTo(15,-5); ctx.lineTo(0,-5); ctx.closePath(); ctx.fill();
             }
             ctx.restore();
         }
 
-        // --- SKINS DETALHADAS ---
         const bSkins = [
             { n: "Clipe Cromado", d: (b) => {
                 ctx.save(); ctx.translate(b.x, b.y); ctx.shadowBlur=12; ctx.shadowColor="rgba(0,0,0,0.3)";
@@ -118,7 +113,8 @@
                 ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#e74c3c"; ctx.fillRect(0,0,70,60); ctx.fillStyle="#2980b9"; ctx.fillRect(70,0,30,60); ctx.strokeStyle="#000"; ctx.strokeRect(0,0,100,60); ctx.restore();
             }},
             { n: "Tesoura Fatal", d: (b) => {
-                ctx.save(); ctx.translate(b.x, b.y); ctx.strokeStyle="#7f8c8d"; ctx.lineWidth=10; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(100,100); ctx.moveTo(100,0); ctx.lineTo(0,100); ctx.stroke(); ctx.fillStyle="#c0392b"; ctx.beginPath(); ctx.arc(15,15,20,0,7); ctx.arc(85,15,20,0,7); ctx.fill(); ctx.restore();
+                ctx.save(); ctx.translate(b.x, b.y); ctx.strokeStyle="#7f8c8d"; ctx.lineWidth=10; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(100,100); ctx.moveTo(100,0); ctx.lineTo(0,100); ctx.stroke();
+                ctx.fillStyle="#c0392b"; ctx.beginPath(); ctx.arc(15,15,20,0,7); ctx.arc(85,15,20,0,7); ctx.fill(); ctx.restore();
             }},
             { n: "Calculadora", d: (b) => {
                 ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#34495e"; ctx.fillRect(0,0,90,120); ctx.fillStyle="#bdc3c7"; ctx.fillRect(10,10,70,30); ctx.restore();
@@ -181,7 +177,6 @@
             bullets = []; bossProjectiles = []; hp = 6;
             player.x = wW/2; player.y = wH - 300;
             while(checkCol(player, player.x, player.y)) { player.x += 60; }
-            
             const s = bSkins[Math.min(level-1, 14)];
             boss = { x: wW/2-60, y: 300, w: 120, h: 120, hp: 100+(level*70), maxHp: 100+(level*70), speed: 2.5+(level*0.45), vx: 4.5, skin: s, timer: 0 };
             document.getElementById('lvlTxt').innerText = level;
@@ -198,7 +193,6 @@
 
         window.onkeydown = (e) => { if(e.key==="Escape") isPaused=!isPaused; keys[e.key.toLowerCase()] = true; }
         window.onkeyup = (e) => keys[e.key.toLowerCase()] = false;
-        
         window.onmousedown = (e) => {
             if(!gameStarted || isDead || isPaused) return;
             const rect = canvas.getBoundingClientRect();
@@ -227,24 +221,47 @@
                     boss.timer=0;
                 }
 
-                bullets.forEach((b,i) => {
-                    b.x+=b.vx; b.y+=b.vy;
-                    if(b.x>boss.x && b.x<boss.x+120 && b.y>boss.y && b.y<boss.y+120) {
+                // CORREÇÃO: Colisão de balas com obstáculos
+                for(let i = bullets.length - 1; i >= 0; i--){
+                    let b = bullets[i];
+                    b.x += b.vx; b.y += b.vy;
+                    b.p.push({x:b.x, y:b.y}); if(b.p.length > 10) b.p.shift();
+
+                    let hitWall = false;
+                    for(let o of obstacles) {
+                        if(b.x > o.x && b.x < o.x + o.w && b.y > o.y && b.y < o.y + o.h) {
+                            hitWall = true; break;
+                        }
+                    }
+
+                    if(hitWall) { bullets.splice(i, 1); }
+                    else if(b.x > boss.x && b.x < boss.x+120 && b.y > boss.y && b.y < boss.y+120) {
                         boss.hp -= (powerType==="strength"?45:12); bullets.splice(i,1); playSfx(600,'square',0.05,0.04);
                         document.getElementById('hp-fill').style.width=(boss.hp/boss.maxHp*100)+"%";
                         if(boss.hp <= 0) { level++; if(level>15) location.reload(); else initLevel(); }
-                    }
-                });
+                    } else if(b.x < 0 || b.x > wW || b.y < 0 || b.y > wH) { bullets.splice(i, 1); }
+                }
 
-                bossProjectiles.forEach((p,i) => {
-                    p.x+=p.vx; p.y+=p.vy;
-                    if(Math.hypot(player.x+22-p.x, player.y+30-p.y)<28 && invencible <= 0) {
-                        hp--; invencible=65; bossProjectiles.splice(i,1); updateLivesUI(); playSfx(150,'sawtooth',0.2,0.1);
-                        if(hp<=0) { isDead=true; document.getElementById('gameOverOverlay').style.display='flex'; }
+                // CORREÇÃO: Colisão de tiros do boss com obstáculos
+                for(let i = bossProjectiles.length - 1; i >= 0; i--){
+                    let p = bossProjectiles[i];
+                    p.x += p.vx; p.y += p.vy;
+
+                    let hitWall = false;
+                    for(let o of obstacles) {
+                        if(p.x > o.x && p.x < o.x + o.w && p.y > o.y && p.y < o.y + o.h) {
+                            hitWall = true; break;
+                        }
                     }
-                });
+
+                    if(hitWall) { bossProjectiles.splice(i, 1); }
+                    else if(Math.hypot(player.x+22-p.x, player.y+30-p.y) < 28 && invencible <= 0) {
+                        hp--; invencible=65; bossProjectiles.splice(i,1); updateLivesUI(); playSfx(150,'sawtooth',0.2,0.1);
+                        if(hp <= 0) { isDead=true; document.getElementById('gameOverOverlay').style.display='flex'; }
+                    } else if(p.x < 0 || p.x > wW || p.y < 0 || p.y > wH) { bossProjectiles.splice(i, 1); }
+                }
+
                 if(invencible > 0) invencible--;
-                
                 items.forEach((it,i) => { if(Math.hypot(player.x+22-it.x, player.y+30-it.y)<40){ 
                     if(it.type==="heal") hp=Math.min(6,hp+2); else {powerType=it.type; powerTimer=660;}
                     items.splice(i,1); updateLivesUI(); playSfx(800,'sine',0.2,0.1);
@@ -253,11 +270,8 @@
                 document.getElementById('pwrTag').innerText = powerType ? powerType.toUpperCase() + " ATIVO" : "";
             }
 
-            // DESENHO
             ctx.clearRect(0,0,sW,sH);
             ctx.save(); ctx.translate(-camera.x, -camera.y);
-
-            // Fundo de Caderno
             ctx.fillStyle="#fefdf5"; ctx.fillRect(0,0,wW,wH);
             ctx.strokeStyle="rgba(52,152,219,0.15)"; ctx.lineWidth=1;
             for(let y=0; y<wH; y+=35){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(wW,y);ctx.stroke();}
@@ -266,7 +280,6 @@
             obstacles.forEach(o => { ctx.fillStyle=o.sideC; ctx.fillRect(o.x+8, o.y+8, o.w, o.h); ctx.fillStyle=o.c; ctx.fillRect(o.x, o.y, o.w, o.h); ctx.strokeRect(o.x, o.y, o.w, o.h); });
             items.forEach(drawPowerUp);
 
-            // Paperman Detalhado
             if(!isDead && invencible % 10 < 5) {
                 ctx.save(); ctx.translate(player.x, player.y);
                 ctx.fillStyle="white"; ctx.strokeStyle="black"; ctx.lineWidth=2;
@@ -277,7 +290,10 @@
                 ctx.restore();
             }
 
-            bullets.forEach(b => { ctx.fillStyle="white"; ctx.strokeStyle="black"; ctx.beginPath(); ctx.arc(b.x, b.y, 8, 0, 7); ctx.fill(); ctx.stroke(); });
+            bullets.forEach(b => {
+                ctx.strokeStyle="rgba(100,100,100,0.2)"; b.p.forEach((p,idx)=> {ctx.beginPath();ctx.arc(p.x,p.y,idx,0,7);ctx.stroke();});
+                ctx.fillStyle="white"; ctx.strokeStyle="#444"; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(b.x,b.y,8,0,7); ctx.fill(); ctx.stroke();
+            });
             bossProjectiles.forEach(p => drawBossBullet(p, level));
             if(boss) boss.skin.d(boss);
 
