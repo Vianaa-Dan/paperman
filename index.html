@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Paperman: Artisanal Magnum Opus - Level Transition Fix</title>
+    <title>Paperman: Balanced Artisanal Masterpiece</title>
     <style>
         body { margin: 0; background: #1a1a1a; color: white; font-family: 'Courier New', monospace; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100vh; }
         canvas { background: #fefdf5; border: 8px solid #95a5a6; cursor: crosshair; box-shadow: 0 20px 50px rgba(0,0,0,0.7); }
@@ -23,7 +23,7 @@
     <div id="startMenu" class="overlay">
         <div class="torn-paper">
             <h1 style="font-size: 3.5rem; margin:0;">PAPERMAN</h1>
-            <p>A Batalha Artisanal Suprema</p>
+            <p>A Batalha Artisanal Balanceada</p>
             <button class="btn" onclick="startGame()">INICIAR AVENTURA</button>
             <p style="font-size: 12px; margin-top: 20px;">WASD: Mover | Clique: Atirar | ESC: Pausa</p>
         </div>
@@ -38,6 +38,7 @@
 
     <div class="hud">
         <div class="timer" id="timeDisplay">00:00</div>
+        <hr style="border: 1px solid #bdc3c7;">
         <b>Nível: <span id="lvlTxt">1</span>/15</b>
         <div class="lives" id="livesDisplay">❤️❤️❤️</div>
         <div id="pwrTag" style="font-size: 12px; font-weight: bold; color: #d35400;"></div>
@@ -99,21 +100,21 @@
             { n: "Tesoura Fatal", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.strokeStyle="#7f8c8d"; ctx.lineWidth=10; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(100,100); ctx.moveTo(100,0); ctx.lineTo(0,100); ctx.stroke(); ctx.fillStyle="#c0392b"; ctx.beginPath(); ctx.arc(15,15,20,0,7); ctx.arc(85,15,20,0,7); ctx.fill(); ctx.restore(); }},
             { n: "Calculadora", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#34495e"; ctx.fillRect(0,0,90,120); ctx.fillStyle="#bdc3c7"; ctx.fillRect(10,10,70,30); ctx.restore(); }},
             { n: "Fragmentadora", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#1a1a1a"; ctx.fillRect(0,0,110,110); ctx.fillStyle="#000"; ctx.fillRect(15,20,80,20); ctx.restore(); }},
-            { n: "Compasso de Metal", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.strokeStyle="#7f8c8d"; ctx.lineWidth=5; ctx.beginPath(); ctx.moveTo(50,0); ctx.lineTo(20,100); ctx.moveTo(50,0); ctx.lineTo(80,100); ctx.stroke(); ctx.restore(); }},
-            { n: "Grampeador Pesado", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#2c3e50"; ctx.fillRect(0,0,100,40); ctx.fillStyle="#bdc3c7"; ctx.fillRect(5,35,90,10); ctx.restore(); }},
+            { n: "Compasso", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.strokeStyle="#7f8c8d"; ctx.lineWidth=5; ctx.beginPath(); ctx.moveTo(50,0); ctx.lineTo(20,100); ctx.moveTo(50,0); ctx.lineTo(80,100); ctx.stroke(); ctx.restore(); }},
+            { n: "Grampeador", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#2c3e50"; ctx.fillRect(0,0,100,40); ctx.fillStyle="#bdc3c7"; ctx.fillRect(5,35,90,10); ctx.restore(); }},
             { n: "Perfurador", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#7f8c8d"; ctx.fillRect(0,40,100,20); ctx.fillRect(20,0,20,40); ctx.fillRect(60,0,20,40); ctx.restore(); }},
-            { n: "Régua Justiceira", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="rgba(189,195,199,0.8)"; ctx.fillRect(0,0,120,30); ctx.fillStyle="#000"; for(let i=0;i<=120;i+=10)ctx.fillRect(i,0,2,8); ctx.restore(); }},
-            { n: "Estilete Afiado", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#1abc9c"; ctx.fillRect(0,30,100,40); ctx.fillStyle="#bdc3c7"; ctx.fillRect(100,35,30,30); ctx.restore(); }},
-            { n: "Pote de Tinta", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#e67e22"; ctx.beginPath(); ctx.arc(50,60,40,0,7); ctx.fill(); ctx.fillStyle="#fff"; ctx.fillRect(30,10,40,20); ctx.restore(); }},
+            { n: "Régua", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="rgba(189,195,199,0.8)"; ctx.fillRect(0,0,120,30); ctx.fillStyle="#000"; for(let i=0;i<=120;i+=10)ctx.fillRect(i,0,2,8); ctx.restore(); }},
+            { n: "Estilete", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#1abc9c"; ctx.fillRect(0,30,100,40); ctx.fillStyle="#bdc3c7"; ctx.fillRect(100,35,30,30); ctx.restore(); }},
+            { n: "Tinta", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#e67e22"; ctx.beginPath(); ctx.arc(50,60,40,0,7); ctx.fill(); ctx.fillStyle="#fff"; ctx.fillRect(30,10,40,20); ctx.restore(); }},
             { n: "Esquadro", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="rgba(52,152,219,0.4)"; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(100,100); ctx.lineTo(0,100); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore(); }},
             { n: "Apontador", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#95a5a6"; ctx.fillRect(0,0,80,80); ctx.fillStyle="#34495e"; ctx.beginPath(); ctx.arc(40,40,20,0,7); ctx.fill(); ctx.restore(); }},
-            { n: "Cola Bastão", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#f1c40f"; ctx.fillRect(30,0,40,100); ctx.fillStyle="#fff"; ctx.fillRect(30,0,40,20); ctx.restore(); }},
+            { n: "Cola", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#f1c40f"; ctx.fillRect(30,0,40,100); ctx.fillStyle="#fff"; ctx.fillRect(30,0,40,20); ctx.restore(); }},
             { n: "PAPERMAN CORROMPIDO", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.shadowBlur=20; ctx.shadowColor="red"; ctx.fillStyle="#1a1a1a"; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(100,10); ctx.lineTo(90,100); ctx.lineTo(5,90); ctx.closePath(); ctx.fill(); ctx.fillStyle="red"; ctx.fillRect(25,30,15,5); ctx.fillRect(60,30,15,5); ctx.restore(); }}
         ];
 
         function createObs() {
             obstacles = [];
-            for(let i=0; i<20; i++) {
+            for(let i=0; i<22; i++) {
                 obstacles.push({ x: Math.random()*(wW-200)+100, y: Math.random()*(wH-400)+200, w: 100, h: 60, c: "#f1c40f", sideC: "#d4ac0d" });
             }
         }
@@ -141,7 +142,9 @@
             player.x = wW/2; player.y = wH - 300;
             while(checkCol(player, player.x, player.y)) { player.x += 60; }
             const s = bSkins[Math.min(level-1, 14)];
-            boss = { x: wW/2-60, y: 300, w: 120, h: 120, hp: 100+(level*70), maxHp: 100+(level*70), speed: 2.5+(level*0.45), vx: 4.5, skin: s, timer: 0 };
+            // VELOCIDADE EQUILIBRADA: Teto máximo de 5.5 (Paperman corre a 6.5)
+            let balancedSpeed = Math.min(5.5, 2.5 + (level * 0.15));
+            boss = { x: wW/2-60, y: 300, w: 120, h: 120, hp: 100+(level*70), maxHp: 100+(level*70), speed: balancedSpeed, vx: 4.5, skin: s, timer: 0 };
             document.getElementById('lvlTxt').innerText = level;
             document.getElementById('bossName').innerText = boss.skin.n;
             document.getElementById('hp-fill').style.width = "100%";
@@ -156,6 +159,7 @@
 
         window.onkeydown = (e) => { if(e.key==="Escape") isPaused=!isPaused; keys[e.key.toLowerCase()] = true; }
         window.onkeyup = (e) => keys[e.key.toLowerCase()] = false;
+        
         window.onmousedown = (e) => {
             if(!gameStarted || isDead || isPaused || changingLevel) return;
             const rect = canvas.getBoundingClientRect();
@@ -167,13 +171,13 @@
         function update() {
             if(!gameStarted || isDead || isPaused || changingLevel) return;
 
-            let cS = player.speed + (powerType==="speed"?4.5:0), nx = player.x, ny = player.y;
+            let cS = player.speed + (powerType==="speed"?3.5:0), nx = player.x, ny = player.y;
             if(keys['w']) ny-=cS; if(keys['s']) ny+=cS; if(keys['a']) nx-=cS; if(keys['d']) nx+=cS;
             if(!checkCol(player, nx, player.y)) player.x = Math.max(0, Math.min(nx, wW-45));
-            if(!checkCol(player, player.x, ny)) player.y = Math.max(0, Math.min(ny, wH-60));
+            if(!checkCol(player, player.x, ny)) player.y = Math.max(0, Math.min(ny, worldH-60));
 
             camera.x = Math.max(0, Math.min(player.x - sW/2, wW-sW));
-            camera.y = Math.max(0, Math.min(player.y - sH/2, wH-sH));
+            camera.y = Math.max(0, Math.min(player.y - sH/2, worldH-sH));
 
             if (level <= 5) { boss.x+=boss.vx; if(boss.x<150||boss.x>wW-250) boss.vx*=-1; }
             else { const a = Math.atan2(player.y-boss.y, player.x-boss.x); boss.x+=Math.cos(a)*boss.speed; boss.y+=Math.sin(a)*boss.speed; }
@@ -181,11 +185,10 @@
             boss.timer++;
             if(boss.timer > Math.max(10, 80-level*4)) {
                 const a = Math.atan2((player.y+30)-(boss.y+60),(player.x+22)-(boss.x+60));
-                bossProjectiles.push({x:boss.x+60,y:boss.y+60,vx:Math.cos(a)*8.5,vy:Math.sin(a)*8.5});
+                bossProjectiles.push({x:boss.x+60,y:boss.y+60,vx:Math.cos(a)*8,vy:Math.sin(a)*8});
                 boss.timer=0;
             }
 
-            // Colisão de balas com obstáculos e Boss
             for(let i = bullets.length - 1; i >= 0; i--){
                 let b = bullets[i]; b.x += b.vx; b.y += b.vy;
                 b.p.push({x:b.x, y:b.y}); if(b.p.length > 10) b.p.shift();
@@ -195,12 +198,7 @@
                 else if(b.x > boss.x && b.x < boss.x+120 && b.y > boss.y && b.y < boss.y+120) {
                     boss.hp -= (powerType==="strength"?45:12); bullets.splice(i,1); playSfx(600,'square',0.05,0.04);
                     document.getElementById('hp-fill').style.width=(boss.hp/boss.maxHp*100)+"%";
-                    if(boss.hp <= 0 && !changingLevel) { 
-                        changingLevel = true; 
-                        level++; 
-                        if(level > 15) location.reload(); 
-                        else setTimeout(initLevel, 1000); // CORREÇÃO: Delay para limpar o nível sem travar
-                    }
+                    if(boss.hp <= 0 && !changingLevel) { changingLevel = true; level++; if(level > 15) location.reload(); else setTimeout(initLevel, 800); }
                 } else if(b.x < 0 || b.x > wW || b.y < 0 || b.y > wH) bullets.splice(i, 1);
             }
 
