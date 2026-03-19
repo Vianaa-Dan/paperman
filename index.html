@@ -2,46 +2,76 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Paperman: The Final Masterpiece (Camera Restored)</title>
+    <title>Paperman: The Artisanal Grand Finale</title>
     <style>
         body { margin: 0; background: #1a1a1a; color: white; font-family: 'Courier New', monospace; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100vh; }
         canvas { background: #fefdf5; border: 8px solid #95a5a6; cursor: crosshair; box-shadow: 0 20px 50px rgba(0,0,0,0.7); }
-        .hud { position: absolute; top: 30px; left: 30px; pointer-events: none; color: #2c3e50; background: rgba(255,255,255,0.95); padding: 15px; border-radius: 5px; z-index: 10; border-left: 6px solid #2980b9; min-width: 200px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        
+        /* HUD - Escondido no Menu */
+        .hud { position: absolute; top: 30px; left: 30px; pointer-events: none; color: #2c3e50; background: rgba(255,255,255,0.95); padding: 15px; border-radius: 5px; z-index: 10; border-left: 6px solid #2980b9; min-width: 200px; display: none; }
         .lives { color: #e74c3c; font-size: 26px; margin-top: 5px; }
-        .timer { font-weight: bold; font-size: 20px; color: #2980b9; margin-bottom: 8px; }
-        #bossUI { position: absolute; top: 30px; width: 500px; text-align: center; z-index: 5; }
+        
+        /* BOSS UI */
+        #bossUI { position: absolute; top: 30px; width: 500px; text-align: center; z-index: 5; display: none; }
         .hp-bg { width: 100%; height: 16px; background: #bdc3c7; border-radius: 10px; overflow: hidden; border: 3px solid #2c3e50; }
         #hp-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #e74c3c, #c0392b); transition: width 0.1s; }
-        #bossName { color: #c0392b; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; font-size: 22px; text-shadow: 2px 2px 0 #fff; }
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); display: flex; justify-content: center; align-items: center; z-index: 110; }
-        .torn-paper { background: #fdfdfd; padding: 40px; width: 450px; text-align: center; color: #2d3436; clip-path: polygon(0% 8%, 12% 0%, 25% 10%, 40% 3%, 55% 12%, 70% 5%, 85% 15%, 100% 7%, 97% 93%, 82% 100%, 67% 90%, 52% 97%, 37% 88%, 22% 95%, 7% 85%, 0% 92%); }
-        .btn { background: #fab1a0; border: 3px dashed #ff7675; padding: 18px 36px; font-size: 1.6rem; cursor: pointer; margin-top: 25px; font-weight: bold; }
+        
+        /* OVERLAYS */
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center; align-items: center; z-index: 110; }
+        .torn-paper { 
+            background: #fdfdfd; padding: 50px; width: 500px; text-align: center; color: #2d3436; 
+            clip-path: polygon(2% 5%, 15% 2%, 28% 7%, 45% 1%, 62% 8%, 80% 3%, 95% 9%, 100% 5%, 98% 95%, 85% 100%, 70% 92%, 55% 98%, 38% 90%, 25% 97%, 10% 92%, 0% 96%);
+            box-shadow: 20px 20px 0px rgba(0,0,0,0.2);
+        }
+
+        .btn { 
+            background: #fab1a0; border: 3px dashed #ff7675; padding: 20px 40px; font-size: 1.8rem; cursor: pointer; 
+            margin-top: 30px; font-weight: bold; font-family: inherit; transition: all 0.3s;
+        }
+        .btn:hover { transform: scale(1.1) rotate(-2deg); background: #ff7675; color: white; }
+
+        /* Estilo Texto Vitória */
+        .win-text { color: #27ae60; font-size: 2.5rem; margin: 0; text-transform: uppercase; }
+        .score-box { font-size: 1.5rem; margin: 20px 0; color: #2980b9; border: 2px solid #bdc3c7; padding: 10px; border-style: dotted; }
     </style>
 </head>
 <body>
 
     <div id="startMenu" class="overlay">
         <div class="torn-paper">
-            <h1 style="font-size: 3.5rem; margin:0;">PAPERMAN</h1>
-            <p>A Batalha Artisanal Balanceada (Câmera Ativa)</p>
+            <h1 style="font-size: 4rem; margin:0; letter-spacing: -3px; color: #2c3e50;">PAPERMAN</h1>
+            <div style="width: 100%; height: 2px; background: #2980b9; margin: 10px 0;"></div>
+            <p style="font-style: italic;">A Grande Aventura Artisanal</p>
             <button class="btn" onclick="startGame()">INICIAR AVENTURA</button>
-            <p style="font-size: 12px; margin-top: 20px;">WASD: Mover | Clique: Atirar | ESC: Pausa</p>
+            <p style="font-size: 12px; margin-top: 25px; color: #636e72;">WASD: Mover | Clique: Atirar | ESC: Pausa</p>
+        </div>
+    </div>
+
+    <div id="winOverlay" class="overlay" style="display: none;">
+        <div class="torn-paper" style="background: #fffdf0; border: 2px solid #f1c40f;">
+            <h1 class="win-text">VITÓRIA TOTAL!</h1>
+            <p>Você purificou o Mundo de Papel.</p>
+            <div class="score-box">
+                TEMPO FINAL: <span id="finalTime">00:00</span>
+            </div>
+            <p>O Paperman Corrompido foi apagado.</p>
+            <button class="btn" style="background: #55efc4; border-color: #00b894;" onclick="location.reload()">JOGAR NOVAMENTE</button>
         </div>
     </div>
 
     <div id="gameOverOverlay" class="overlay" style="display: none;">
         <div class="torn-paper">
             <h1 style="font-size: 3rem; color: #c0392b;">AMASSADO!</h1>
+            <p>Sua folha foi rasgada antes do fim.</p>
             <button class="btn" onclick="location.reload()">RECOMEÇAR</button>
         </div>
     </div>
 
-    <div class="hud">
-        <div class="timer" id="timeDisplay">00:00</div>
-        <hr style="border: 1px solid #bdc3c7;">
+    <div class="hud" id="hud">
+        <div id="timeDisplay" style="font-weight:bold; color:#2980b9; font-size: 20px;">00:00</div>
         <b>Nível: <span id="lvlTxt">1</span>/15</b>
         <div class="lives" id="livesDisplay">❤️❤️❤️</div>
-        <div id="pwrTag" style="font-size: 12px; font-weight: bold; color: #d35400;"></div>
+        <div id="pwrTag" style="font-size: 12px; font-weight: bold; color: #d35400; margin-top:5px;"></div>
     </div>
 
     <div id="bossUI">
@@ -71,94 +101,52 @@
             o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + d);
         }
 
-        // --- TIROS PERSONALIZADOS ---
-        function drawBossBullet(p, lvl) {
-            ctx.save(); ctx.translate(p.x, p.y);
-            if([1,6,13].includes(lvl)) {
-                let g = ctx.createRadialGradient(-3,-3,1,0,0,10); g.addColorStop(0,"#fff"); g.addColorStop(1,"#7f8c8d");
-                ctx.fillStyle=g; ctx.beginPath(); ctx.arc(0,0,10,0,7); ctx.fill();
-            } else if(lvl === 2) { ctx.fillStyle="#ff7675"; ctx.fillRect(-8,-5,16,10); }
-            else if([3,10].includes(lvl)) { ctx.rotate(Date.now()*0.01); ctx.fillStyle="#bdc3c7"; ctx.beginPath(); ctx.moveTo(-15,0); ctx.lineTo(0,-5); ctx.lineTo(15,0); ctx.lineTo(0,5); ctx.fill(); }
-            else if([5,14].includes(lvl)) { ctx.fillStyle="white"; ctx.fillRect(-2,-10,4,20); }
-            else if(lvl === 15) { ctx.shadowBlur=15; ctx.shadowColor="red"; ctx.fillStyle="red"; ctx.beginPath(); ctx.arc(0,0,12,0,7); ctx.fill(); }
-            else { ctx.fillStyle="orange"; ctx.fillRect(-6,-6,12,12); }
-            ctx.restore();
-        }
-
-        // --- POWER-UPS ---
-        function drawPowerUp(it) {
-            ctx.save(); ctx.translate(it.x, it.y); ctx.shadowBlur = 10; ctx.shadowColor = "white";
-            if(it.type === "heal") {
-                ctx.fillStyle="#e74c3c"; ctx.beginPath(); ctx.moveTo(0,10); ctx.bezierCurveTo(-15,-5,-15,-20,0,-20); ctx.bezierCurveTo(15,-20,15,-5,0,10); ctx.fill();
-            } else if(it.type === "strength") {
-                ctx.fillStyle="#c0392b"; ctx.fillRect(-15,-15,30,30); ctx.fillStyle="white"; ctx.fillRect(-10,-10,5,10); ctx.fillRect(-2,-10,5,10); ctx.fillRect(6,-10,5,10);
-            } else {
-                ctx.fillStyle="#f1c40f"; ctx.beginPath(); ctx.moveTo(0,-20); ctx.lineTo(-15,5); ctx.lineTo(0,5); ctx.lineTo(-5,20); ctx.lineTo(15,-5); ctx.lineTo(0,-5); ctx.closePath(); ctx.fill();
-            }
-            ctx.restore();
-        }
-
+        // --- SKINS E TIROS ---
         const bSkins = [
-            { n: "Clipe Cromado", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.shadowBlur=12; ctx.shadowColor="rgba(0,0,0,0.3)"; let g = ctx.createLinearGradient(0,0,100,100); g.addColorStop(0,"#bdc3c7"); g.addColorStop(0.5,"#ffffff"); g.addColorStop(1,"#7f8c8d"); ctx.strokeStyle=g; ctx.lineWidth=8; ctx.lineCap="round"; ctx.beginPath(); ctx.moveTo(20,20); ctx.lineTo(80,20); ctx.arc(80,55,35,-1.5,1.5); ctx.lineTo(40,90); ctx.arc(40,60,30,1.5,-1.5,true); ctx.lineTo(70,30); ctx.stroke(); ctx.restore(); }},
-            { n: "Borracha Fosca", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#e74c3c"; ctx.fillRect(0,0,70,60); ctx.fillStyle="#2980b9"; ctx.fillRect(70,0,30,60); ctx.strokeStyle="#000"; ctx.strokeRect(0,0,100,60); ctx.restore(); }},
-            { n: "Tesoura Fatal", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.strokeStyle="#7f8c8d"; ctx.lineWidth=10; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(100,100); ctx.moveTo(100,0); ctx.lineTo(0,100); ctx.stroke(); ctx.fillStyle="#c0392b"; ctx.beginPath(); ctx.arc(15,15,20,0,7); ctx.arc(85,15,20,0,7); ctx.fill(); ctx.restore(); }},
-            { n: "Calculadora", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#34495e"; ctx.fillRect(0,0,90,120); ctx.fillStyle="#bdc3c7"; ctx.fillRect(10,10,70,30); ctx.restore(); }},
-            { n: "Fragmentadora", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#1a1a1a"; ctx.fillRect(0,0,110,110); ctx.fillStyle="#000"; ctx.fillRect(15,20,80,20); ctx.restore(); }},
-            { n: "Compasso", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.strokeStyle="#7f8c8d"; ctx.lineWidth=5; ctx.beginPath(); ctx.moveTo(50,0); ctx.lineTo(20,100); ctx.moveTo(50,0); ctx.lineTo(80,100); ctx.stroke(); ctx.restore(); }},
-            { n: "Grampeador", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#2c3e50"; ctx.fillRect(0,0,100,40); ctx.fillStyle="#bdc3c7"; ctx.fillRect(5,35,90,10); ctx.restore(); }},
-            { n: "Perfurador", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#7f8c8d"; ctx.fillRect(0,40,100,20); ctx.fillRect(20,0,20,40); ctx.fillRect(60,0,20,40); ctx.restore(); }},
-            { n: "Régua", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="rgba(189,195,199,0.8)"; ctx.fillRect(0,0,120,30); ctx.fillStyle="#000"; for(let i=0;i<=120;i+=10)ctx.fillRect(i,0,2,8); ctx.restore(); }},
-            { n: "Estilete", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#1abc9c"; ctx.fillRect(0,30,100,40); ctx.fillStyle="#bdc3c7"; ctx.fillRect(100,35,30,30); ctx.restore(); }},
-            { n: "Tinta", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#e67e22"; ctx.beginPath(); ctx.arc(50,60,40,0,7); ctx.fill(); ctx.fillStyle="#fff"; ctx.fillRect(30,10,40,20); ctx.restore(); }},
-            { n: "Esquadro", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="rgba(52,152,219,0.4)"; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(100,100); ctx.lineTo(0,100); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore(); }},
-            { n: "Apontador", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#95a5a6"; ctx.fillRect(0,0,80,80); ctx.fillStyle="#34495e"; ctx.beginPath(); ctx.arc(40,40,20,0,7); ctx.fill(); ctx.restore(); }},
-            { n: "Cola", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#f1c40f"; ctx.fillRect(30,0,40,100); ctx.fillStyle="#fff"; ctx.fillRect(30,0,40,20); ctx.restore(); }},
-            { n: "PAPERMAN CORROMPIDO", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.shadowBlur=20; ctx.shadowColor="red"; ctx.fillStyle="#1a1a1a"; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(100,10); ctx.lineTo(90,100); ctx.lineTo(5,90); ctx.closePath(); ctx.fill(); ctx.fillStyle="red"; ctx.fillRect(25,30,15,5); ctx.fillRect(60,30,15,5); ctx.restore(); }}
+            { n: "Clipe Cromado", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.shadowBlur=12; ctx.shadowColor="rgba(0,0,0,0.3)"; let g = ctx.createLinearGradient(0,0,100,100); g.addColorStop(0,"#bdc3c7"); g.addColorStop(0.5,"#ffffff"); g.addColorStop(1,"#7f8c8d"); ctx.strokeStyle=g; ctx.lineWidth=8; ctx.lineCap="round"; ctx.beginPath(); ctx.moveTo(20,20); ctx.lineTo(80,20); ctx.arc(80,55,35,-1.5,1.5); ctx.lineTo(40,90); ctx.arc(40,60,30,1.5,-1.5,true); ctx.lineTo(70,30); ctx.stroke(); ctx.restore(); }, dP: (p) => { ctx.fillStyle="#bdc3c7"; ctx.beginPath(); ctx.arc(p.x, p.y, 10, 0, 7); ctx.fill(); }},
+            { n: "Borracha Fosca", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#e74c3c"; ctx.fillRect(0,0,70,60); ctx.fillStyle="#2980b9"; ctx.fillRect(70,0,30,60); ctx.strokeStyle="#000"; ctx.strokeRect(0,0,100,60); ctx.restore(); }, dP: (p) => { ctx.fillStyle="#ff7675"; ctx.fillRect(p.x-8, p.y-5, 16, 10); }},
+            { n: "Tesoura Fatal", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.strokeStyle="#7f8c8d"; ctx.lineWidth=10; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(100,100); ctx.moveTo(100,0); ctx.lineTo(0,100); ctx.stroke(); ctx.fillStyle="#c0392b"; ctx.beginPath(); ctx.arc(15,15,20,0,7); ctx.arc(85,15,20,0,7); ctx.fill(); ctx.restore(); }, dP: (p) => { ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(Date.now()*0.01); ctx.fillStyle="gray"; ctx.fillRect(-15,-2,30,4); ctx.restore(); }},
+            { n: "Calculadora", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#34495e"; ctx.fillRect(0,0,90,120); ctx.fillStyle="#bdc3c7"; ctx.fillRect(10,10,70,30); ctx.restore(); }, dP: p => { ctx.fillStyle="#000"; ctx.font="15px Arial"; ctx.fillText("8", p.x, p.y); }},
+            { n: "Fragmentadora", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#1a1a1a"; ctx.fillRect(0,0,110,110); ctx.fillStyle="#000"; ctx.fillRect(15,20,80,20); ctx.restore(); }, dP: p => { ctx.fillStyle="#fff"; ctx.fillRect(p.x, p.y, 2, 15); }},
+            { n: "Compasso", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.strokeStyle="#7f8c8d"; ctx.lineWidth=5; ctx.beginPath(); ctx.moveTo(50,0); ctx.lineTo(20,100); ctx.moveTo(50,0); ctx.lineTo(80,100); ctx.stroke(); ctx.restore(); }, dP: p => { ctx.fillStyle="#000"; ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, 7); ctx.fill(); }},
+            { n: "Grampeador", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#2c3e50"; ctx.fillRect(0,0,100,40); ctx.fillStyle="#bdc3c7"; ctx.fillRect(5,35,90,10); ctx.restore(); }, dP: p => { ctx.strokeStyle="#bdc3c7"; ctx.strokeRect(p.x, p.y, 10, 5); }},
+            { n: "Perfurador", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#7f8c8d"; ctx.fillRect(0,40,100,20); ctx.fillRect(20,0,20,40); ctx.fillRect(60,0,20,40); ctx.restore(); }, dP: p => { ctx.fillStyle="#fff"; ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, 7); ctx.fill(); ctx.stroke(); }},
+            { n: "Régua", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="rgba(189,195,199,0.8)"; ctx.fillRect(0,0,120,30); ctx.fillStyle="#000"; for(let i=0;i<=120;i+=10)ctx.fillRect(i,0,2,8); ctx.restore(); }, dP: p => { ctx.fillStyle="#000"; ctx.fillRect(p.x, p.y, 2, 10); }},
+            { n: "Estilete", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#1abc9c"; ctx.fillRect(0,30,100,40); ctx.fillStyle="#bdc3c7"; ctx.fillRect(100,35,30,30); ctx.restore(); }, dP: p => { ctx.fillStyle="#ccc"; ctx.fillRect(p.x, p.y, 12, 6); }},
+            { n: "Tinta", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#e67e22"; ctx.beginPath(); ctx.arc(50,60,40,0,7); ctx.fill(); ctx.fillStyle="#fff"; ctx.fillRect(30,10,40,20); ctx.restore(); }, dP: p => { ctx.fillStyle="#e67e22"; ctx.beginPath(); ctx.arc(p.x, p.y, 8, 0, 7); ctx.fill(); }},
+            { n: "Esquadro", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="rgba(52,152,219,0.4)"; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(100,100); ctx.lineTo(0,100); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore(); }, dP: p => { ctx.fillStyle="#3498db"; ctx.beginPath(); ctx.moveTo(p.x, p.y-5); ctx.lineTo(p.x+5, p.y+5); ctx.lineTo(p.x-5, p.y+5); ctx.fill(); }},
+            { n: "Apontador", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#95a5a6"; ctx.fillRect(0,0,80,80); ctx.fillStyle="#34495e"; ctx.beginPath(); ctx.arc(40,40,20,0,7); ctx.fill(); ctx.restore(); }, dP: p => { ctx.fillStyle="#7f8c8d"; ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, 7); ctx.fill(); }},
+            { n: "Cola", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#f1c40f"; ctx.fillRect(30,0,40,100); ctx.fillStyle="#fff"; ctx.fillRect(30,0,40,20); ctx.restore(); }, dP: p => { ctx.fillStyle="#f1c40f"; ctx.beginPath(); ctx.arc(p.x, p.y, 10, 0, 7); ctx.fill(); }},
+            { n: "PAPERMAN CORROMPIDO", d: (b) => { ctx.save(); ctx.translate(b.x, b.y); ctx.shadowBlur=20; ctx.shadowColor="red"; ctx.fillStyle="#1a1a1a"; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(100,10); ctx.lineTo(90,100); ctx.lineTo(5,90); ctx.closePath(); ctx.fill(); ctx.fillStyle="red"; ctx.fillRect(25,30,15,5); ctx.fillRect(60,30,15,5); ctx.restore(); }, dP: p => { ctx.fillStyle="red"; ctx.shadowBlur=10; ctx.shadowColor="red"; ctx.beginPath(); ctx.arc(p.x, p.y, 12, 0, 7); ctx.fill(); ctx.shadowBlur=0; }}
         ];
 
-        function createObs() {
-            obstacles = [];
-            for(let i=0; i<25; i++) {
-                obstacles.push({ x: Math.random()*(wW-200)+100, y: Math.random()*(wH-400)+200, w: 100, h: 60, c: "#f1c40f", sideC: "#d4ac0d" });
-            }
-        }
-
-        function checkCol(o, nx, ny) {
-            for(let Ob of obstacles) if(nx < Ob.x+Ob.w && nx+(o.w||8)>Ob.x && ny < Ob.y+Ob.h && ny+(o.h||8)>Ob.y) return true;
-            return false;
-        }
+        function createObs() { obstacles = []; for(let i=0; i<22; i++) { obstacles.push({ x: Math.random()*(wW-200)+100, y: Math.random()*(wH-400)+200, w: 100, h: 60, c: "#f1c40f", sideC: "#d4ac0d" }); } }
+        function checkCol(o, nx, ny) { for(let Ob of obstacles) if(nx < Ob.x+Ob.w && nx+(o.w||8)>Ob.x && ny < Ob.y+Ob.h && ny+(o.h||8)>Ob.y) return true; return false; }
 
         function startGame() {
             audioCtx = new AudioContext();
             document.getElementById('startMenu').style.display = 'none';
-            gameStarted = true; startTime = Date.now(); initLevel(); setInterval(() => { if(gameStarted&&!isDead&&!changingLevel) spawnItm() }, 9000); loop();
+            document.getElementById('hud').style.display = 'block';
+            document.getElementById('bossUI').style.display = 'block';
+            gameStarted = true; startTime = Date.now(); initLevel(); loop();
         }
 
-        function spawnItm() {
-            const ty=["heal","strength","speed"];
-            items.push({x: Math.random()*(wW-100)+50, y: Math.random()*(wH-100)+50, type: ty[Math.floor(Math.random()*3)]});
-        }
+        function spawnItm() { items.push({x: Math.random()*(wW-100)+50, y: Math.random()*(wH-100)+50, type: ["heal","strength","speed"][Math.floor(Math.random()*3)]}); }
 
         function initLevel() {
-            changingLevel = false;
-            bullets = []; bossProjectiles = []; items = []; hp = 6;
-            createObs();
-            player.x = wW/2; player.y = wH - 300;
+            changingLevel = false; bullets = []; bossProjectiles = []; items = []; hp = 6;
+            createObs(); player.x = wW/2; player.y = wH - 300;
             while(checkCol(player, player.x, player.y)) { player.x += 60; }
             const s = bSkins[Math.min(level-1, 14)];
-            let balancedSpeed = Math.min(5.5, 2.5 + (level * 0.15));
-            boss = { x: wW/2-60, y: 300, w: 120, h: 120, hp: 100+(level*70), maxHp: 100+(level*70), speed: balancedSpeed, vx: 4.5, skin: s, timer: 0 };
+            let bHp = 100+(level*75);
+            boss = { x: wW/2-60, y: 300, w: 120, h: 120, hp: bHp, maxHp: bHp, speed: Math.min(5.5, 2.5+(level*0.15)), vx: 4.5, skin: s, timer: 0 };
             document.getElementById('lvlTxt').innerText = level;
             document.getElementById('bossName').innerText = boss.skin.n;
             document.getElementById('hp-fill').style.width = "100%";
             updateLivesUI();
         }
 
-        function updateLivesUI() {
-            let h = ""; let t = hp;
-            for(let i=0; i<3; i++) { if(t>=2){h+="❤️";t-=2;} else if(t==1){h+="💔";t-=1;} else h+="🖤"; }
-            document.getElementById('livesDisplay').innerHTML = h;
-        }
+        function updateLivesUI() { let h = ""; let t = hp; for(let i=0; i<3; i++) { if(t>=2){h+="❤️";t-=2;} else if(t==1){h+="💔";t-=1;} else h+="🖤"; } document.getElementById('livesDisplay').innerHTML = h; }
 
         window.onkeydown = (e) => { if(e.key==="Escape") isPaused=!isPaused; keys[e.key.toLowerCase()] = true; }
         window.onkeyup = (e) => keys[e.key.toLowerCase()] = false;
@@ -170,101 +158,90 @@
             playSfx(440, 'triangle', 0.1, 0.05, true);
         };
 
-        function update() {
-            if(!gameStarted || isDead || isPaused || changingLevel) return;
+        function loop() {
+            if(gameStarted && !isDead && !isPaused && !changingLevel) {
+                let cS = player.speed + (powerType==="speed"?3.5:0), nx = player.x, ny = player.y;
+                if(keys['w']) ny-=cS; if(keys['s']) ny+=cS; if(keys['a']) nx-=cS; if(keys['d']) nx+=cS;
+                if(!checkCol(player, nx, player.y)) player.x = Math.max(0, Math.min(nx, wW-45));
+                if(!checkCol(player, player.x, ny)) player.y = Math.max(0, Math.min(ny, wH-60));
+                camera.x = Math.max(0, Math.min(player.x - sW/2, wW-sW));
+                camera.y = Math.max(0, Math.min(player.y - sH/2, wH-sH));
 
-            let cS = player.speed + (powerType==="speed"?3.5:0), nx = player.x, ny = player.y;
-            if(keys['w']) ny-=cS; if(keys['s']) ny+=cS; if(keys['a']) nx-=cS; if(keys['d']) nx+=cS;
-            if(!checkCol(player, nx, player.y)) player.x = Math.max(0, Math.min(nx, wW-45));
-            if(!checkCol(player, player.x, ny)) player.y = Math.max(0, Math.min(ny, wH-60));
+                if (level <= 5) { boss.x+=boss.vx; if(boss.x<150||boss.x>wW-250) boss.vx*=-1; }
+                else { const a = Math.atan2(player.y-boss.y, player.x-boss.x); boss.x+=Math.cos(a)*boss.speed; boss.y+=Math.sin(a)*boss.speed; }
 
-            // SISTEMA DE CÂMERA (ATUALIZAÇÃO)
-            camera.x = player.x - sW/2;
-            camera.y = player.y - sH/2;
-            camera.x = Math.max(0, Math.min(camera.x, wW - sW));
-            camera.y = Math.max(0, Math.min(camera.y, wH - sH));
+                boss.timer++;
+                if(boss.timer > Math.max(10, 80-level*4)) {
+                    const a = Math.atan2((player.y+30)-(boss.y+60),(player.x+22)-(boss.x+60));
+                    bossProjectiles.push({x:boss.x+60,y:boss.y+60,vx:Math.cos(a)*8.5,vy:Math.sin(a)*8.5});
+                    boss.timer=0;
+                }
 
-            if (level <= 5) { boss.x+=boss.vx; if(boss.x<150||boss.x>wW-250) boss.vx*=-1; }
-            else { const a = Math.atan2(player.y-boss.y, player.x-boss.x); boss.x+=Math.cos(a)*boss.speed; boss.y+=Math.sin(a)*boss.speed; }
+                for(let i=bullets.length-1; i>=0; i--) {
+                    let b = bullets[i]; b.x+=b.vx; b.y+=b.vy; b.p.push({x:b.x,y:b.y}); if(b.p.length>10) b.p.shift();
+                    let hitW = false; for(let o of obstacles) if(b.x>o.x && b.x<o.x+o.w && b.y>o.y && b.y<o.y+o.h) hitW=true;
+                    if(hitW) bullets.splice(i,1);
+                    else if(b.x>boss.x && b.x<boss.x+120 && b.y>boss.y && b.y<boss.y+120) {
+                        boss.hp -= (powerType==="strength"?45:12); bullets.splice(i,1); playSfx(600,'square',0.05,0.04);
+                        document.getElementById('hp-fill').style.width=(boss.hp/boss.maxHp*100)+"%";
+                        if(boss.hp <= 0 && !changingLevel) {
+                            changingLevel = true;
+                            if(level === 15) {
+                                document.getElementById('finalTime').innerText = document.getElementById('timeDisplay').innerText;
+                                document.getElementById('winOverlay').style.display = 'flex';
+                            } else {
+                                level++; setTimeout(initLevel, 800);
+                            }
+                        }
+                    } else if(b.x<0||b.x>wW||b.y<0||b.y>wH) bullets.splice(i,1);
+                }
 
-            boss.timer++;
-            if(boss.timer > Math.max(10, 80-level*4)) {
-                const a = Math.atan2((player.y+30)-(boss.y+60),(player.x+22)-(boss.x+60));
-                bossProjectiles.push({x:boss.x+60,y:boss.y+60,vx:Math.cos(a)*8,vy:Math.sin(a)*8});
-                boss.timer=0;
+                for(let i=bossProjectiles.length-1; i>=0; i--) {
+                    let p=bossProjectiles[i]; p.x+=p.vx; p.y+=p.vy;
+                    let hitW=false; for(let o of obstacles) if(p.x>o.x && p.x<o.x+o.w && p.y>o.y && p.y<o.y+o.h) hitW=true;
+                    if(hitW) bossProjectiles.splice(i,1);
+                    else if(Math.hypot(player.x+22-p.x, player.y+30-p.y)<28 && invencible<=0) {
+                        hp--; invencible=65; bossProjectiles.splice(i,1); updateLivesUI(); playSfx(150,'sawtooth',0.2,0.1);
+                        if(hp<=0) { isDead=true; document.getElementById('gameOverOverlay').style.display='flex'; }
+                    } else if(p.x<0||p.x>wW||p.y<0||p.y>wH) bossProjectiles.splice(i,1);
+                }
+                items.forEach((it,i) => { if(Math.hypot(player.x+22-it.x, player.y+30-it.y)<40){ if(it.type==="heal") hp=Math.min(6,hp+2); else {powerType=it.type; powerTimer=660;} items.splice(i,1); updateLivesUI(); playSfx(800,'sine',0.2,0.1); }});
+                if(powerTimer>0) powerTimer--; else powerType="";
+                if(invencible > 0) invencible--;
+                document.getElementById('pwrTag').innerText = powerType ? powerType.toUpperCase() + " ATIVO" : "";
             }
 
-            for(let i = bullets.length - 1; i >= 0; i--){
-                let b = bullets[i]; b.x += b.vx; b.y += b.vy;
-                b.p.push({x:b.x, y:b.y}); if(b.p.length > 10) b.p.shift();
-                let hitWall = false;
-                for(let o of obstacles) if(b.x > o.x && b.x < o.x + o.w && b.y > o.y && b.y < o.y + o.h) { hitWall = true; break; }
-                if(hitWall) bullets.splice(i, 1);
-                else if(b.x > boss.x && b.x < boss.x+120 && b.y > boss.y && b.y < boss.y+120) {
-                    boss.hp -= (powerType==="strength"?45:12); bullets.splice(i,1); playSfx(600,'square',0.05,0.04);
-                    document.getElementById('hp-fill').style.width=(boss.hp/boss.maxHp*100)+"%";
-                    if(boss.hp <= 0 && !changingLevel) { changingLevel = true; level++; if(level > 15) location.reload(); else setTimeout(initLevel, 800); }
-                } else if(b.x < 0 || b.x > wW || b.y < 0 || b.y > wH) bullets.splice(i, 1);
-            }
-
-            for(let i = bossProjectiles.length - 1; i >= 0; i--){
-                let p = bossProjectiles[i]; p.x += p.vx; p.y += p.vy;
-                let hitWall = false;
-                for(let o of obstacles) if(p.x > o.x && p.x < o.x + o.w && p.y > o.y && p.y < o.y + o.h) { hitWall = true; break; }
-                if(hitWall) bossProjectiles.splice(i, 1);
-                else if(Math.hypot(player.x+22-p.x, player.y+30-p.y) < 28 && invencible <= 0) {
-                    hp--; invencible=65; bossProjectiles.splice(i,1); updateLivesUI(); playSfx(150,'sawtooth',0.2,0.1);
-                    if(hp <= 0) { isDead=true; document.getElementById('gameOverOverlay').style.display='flex'; }
-                } else if(p.x < 0 || p.x > wW || p.y < 0 || p.y > wH) bossProjectiles.splice(i, 1);
-            }
-
-            items.forEach((it,i) => { if(Math.hypot(player.x+22-it.x, player.y+30-it.y)<40){ 
-                if(it.type==="heal") hp=Math.min(6,hp+2); else {powerType=it.type; powerTimer=660;}
-                items.splice(i,1); updateLivesUI(); playSfx(800,'sine',0.2,0.1);
-            }});
-            if(powerTimer>0) powerTimer--; else powerType="";
-            if(invencible > 0) invencible--;
-        }
-
-        function draw() {
-            ctx.clearRect(0, 0, sW, sH);
-            ctx.save(); ctx.translate(-camera.x, -camera.y);
-
-            // Chão de Caderno
-            ctx.fillStyle="#fefdf5"; ctx.fillRect(0,0,wW,wH);
-            ctx.strokeStyle="rgba(52,152,219,0.15)"; ctx.lineWidth=1;
+            ctx.clearRect(0, 0, sW, sH); ctx.save(); ctx.translate(-camera.x, -camera.y);
+            ctx.fillStyle="#fefdf5"; ctx.fillRect(0,0,wW,wH); ctx.strokeStyle="rgba(52,152,219,0.15)";
             for(let y=0; y<wH; y+=35){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(wW,y);ctx.stroke();}
             ctx.strokeStyle="rgba(231,76,60,0.3)"; ctx.lineWidth=2; ctx.beginPath();ctx.moveTo(150,0);ctx.lineTo(150,wH);ctx.stroke();
 
             obstacles.forEach(o => { ctx.fillStyle=o.sideC; ctx.fillRect(o.x+8, o.y+8, o.w, o.h); ctx.fillStyle=o.c; ctx.fillRect(o.x, o.y, o.w, o.h); ctx.strokeRect(o.x, o.y, o.w, o.h); });
-            items.forEach(drawPowerUp);
+            items.forEach(it => {
+                ctx.save(); ctx.translate(it.x, it.y);
+                if(it.type==="heal") { ctx.fillStyle="red"; ctx.beginPath(); ctx.moveTo(0,5); ctx.lineTo(-10,-5); ctx.lineTo(0,-15); ctx.lineTo(10,-5); ctx.fill(); }
+                else if(it.type==="strength") { ctx.fillStyle="blue"; ctx.fillRect(-10,-10,20,20); }
+                else { ctx.fillStyle="gold"; ctx.beginPath(); ctx.moveTo(0,-15); ctx.lineTo(-10,10); ctx.lineTo(10,10); ctx.fill(); }
+                ctx.restore();
+            });
 
             if(!isDead && invencible % 10 < 5) {
-                ctx.save(); ctx.translate(player.x, player.y);
-                ctx.fillStyle="white"; ctx.strokeStyle="black"; ctx.lineWidth=2;
-                ctx.beginPath(); ctx.moveTo(2,5);ctx.lineTo(15,0);ctx.lineTo(38,3);ctx.lineTo(35,25);ctx.lineTo(40,52);ctx.lineTo(20,55);ctx.lineTo(3,50);ctx.lineTo(5,20);ctx.closePath();
-                ctx.fill(); ctx.stroke();
+                ctx.save(); ctx.translate(player.x, player.y); ctx.fillStyle="white"; ctx.strokeStyle="black"; ctx.lineWidth=2;
+                ctx.beginPath(); ctx.moveTo(2,5);ctx.lineTo(15,0);ctx.lineTo(38,3);ctx.lineTo(35,25);ctx.lineTo(40,52);ctx.lineTo(20,55);ctx.lineTo(3,50);ctx.lineTo(5,20);ctx.closePath(); ctx.fill(); ctx.stroke();
                 ctx.strokeStyle="rgba(0,0,0,0.1)"; ctx.beginPath(); ctx.moveTo(5,15); ctx.lineTo(35,25); ctx.stroke();
-                ctx.fillStyle="black"; ctx.beginPath(); ctx.ellipse(12,18,2,3,0,0,7); ctx.fill(); ctx.beginPath(); ctx.ellipse(28,18,2,3,0,0,7); ctx.fill();
-                ctx.restore();
+                ctx.fillStyle="black"; ctx.beginPath(); ctx.ellipse(12,18,2,3,0,0,7); ctx.fill(); ctx.beginPath(); ctx.ellipse(28,18,2,3,0,0,7); ctx.fill(); ctx.restore();
             }
 
-            bullets.forEach(b => {
-                ctx.strokeStyle="rgba(100,100,100,0.2)"; b.p.forEach((p,idx)=> {ctx.beginPath();ctx.arc(p.x,p.y,idx,0,7);ctx.stroke();});
-                ctx.fillStyle="white"; ctx.strokeStyle="#444"; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(b.x,b.y,8,0,7); ctx.fill(); ctx.stroke();
-            });
-            bossProjectiles.forEach(p => drawBossBullet(p, level));
+            bullets.forEach(b => { ctx.strokeStyle="rgba(100,100,100,0.2)"; b.p.forEach((p,idx)=> {ctx.beginPath();ctx.arc(p.x,p.y,idx,0,7);ctx.stroke();}); ctx.fillStyle="white"; ctx.strokeStyle="#444"; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(b.x,b.y,8,0,7); ctx.fill(); ctx.stroke(); });
+            bossProjectiles.forEach(p => boss.skin.dP(p));
             if(boss) boss.skin.d(boss);
 
             ctx.restore();
-            if(gameStarted) {
-                let s = Math.floor((Date.now()-(startTime||Date.now()))/1000);
-                document.getElementById('timeDisplay').innerText = `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
-                update();
-            }
-            requestAnimationFrame(draw);
+            if(gameStarted) { let s = Math.floor((Date.now()-startTime)/1000); document.getElementById('timeDisplay').innerText = `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`; }
+            requestAnimationFrame(loop);
         }
-        draw();
+        loop();
+        setInterval(() => { if(gameStarted&&!isDead&&!changingLevel) spawnItm() }, 9000);
     </script>
 </body>
 </html>
