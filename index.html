@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Paperman: Visible Shot Edition</title>
+    <title>Paperman: The Final Battle</title>
     <style>
         body { margin: 0; background: #2c3e50; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; display: flex; flex-direction: column; align-items: center; }
         canvas { background: #ecf0f1; border: 6px solid #95a5a6; cursor: crosshair; margin-top: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
@@ -10,9 +10,9 @@
         .lives { color: #e74c3c; font-size: 24px; margin-top: 5px; }
         #bossUI { position: absolute; top: 40px; width: 450px; text-align: center; z-index: 5; }
         .hp-bg { width: 100%; height: 15px; background: #bdc3c7; border-radius: 10px; overflow: hidden; border: 2px solid #2c3e50; }
-        #hp-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #ff4d4d, #c0392b); transition: width 0.2s; }
+        #hp-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #ff4d4d, #c0392b); transition: width 0.1s; }
         #bossName { color: #c0392b; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; font-size: 20px; }
-        #audioControl { position: absolute; top: 40px; right: 40px; z-index: 100; padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        #audioControl { position: absolute; top: 40px; right: 40px; z-index: 100; padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
         #gameOverOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); display: none; justify-content: center; align-items: center; z-index: 100; }
         .torn-paper { background: #fdfdfd; padding: 40px; width: 350px; text-align: center; clip-path: polygon(0% 5%, 15% 0%, 30% 7%, 45% 2%, 60% 8%, 75% 3%, 90% 9%, 100% 4%, 98% 95%, 85% 100%, 70% 93%, 55% 98%, 40% 92%, 25% 97%, 10% 91%, 0% 96%); }
         .retry-btn { background: #fab1a0; border: 2px dashed #ff7675; padding: 10px 30px; font-size: 1.2rem; cursor: pointer; margin-top: 20px; }
@@ -24,16 +24,18 @@
 
     <div id="gameOverOverlay">
         <div class="torn-paper">
-            <h1 style="color: #2d3436; margin:0;">GAME OVER</h1>
+            <h1 style="color: #2d3436; margin:0; font-family: monospace;">GAME OVER</h1>
+            <p style="color: #636e72">O Paperman foi amassado...</p>
             <button class="retry-btn" onclick="retryGame()">RECOMEÇAR</button>
         </div>
     </div>
 
     <div class="hud">
-        <div id="timeDisplay" style="font-weight:bold; color:#2980b9;">00:00</div>
+        <div id="timeDisplay" style="font-weight:bold; color:#2980b9; font-family: monospace;">00:00</div>
         <hr>
         <b>Nível: <span id="lvlTxt">1</span>/15</b>
         <div class="lives" id="livesDisplay"></div>
+        <small style="color: #666;">ESC: Pausa | Clique: Atirar</small>
     </div>
 
     <div id="bossUI">
@@ -49,12 +51,12 @@
         canvas.width = 800; canvas.height = 600;
 
         let level = 1, hp = 6, isDead = false, isPaused = false, invencible = 0;
-        let startTime = Date.now();
+        let startTime = Date.now(), totalPausedTime = 0, pauseStart = 0;
         const player = { x: 380, y: 500, w: 40, h: 55, speed: 6 };
         let bullets = [], particles = [], bossProjectiles = [], boss = null;
         const keys = {};
 
-        // --- AUDIO ---
+        // --- SISTEMA DE ÁUDIO ---
         let audioCtx = null, isMuted = true;
         function toggleAudio() {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -62,7 +64,7 @@
             isMuted = !isMuted;
             document.getElementById('audioControl').innerText = isMuted ? "🔈 LIGAR SOM" : "🔊 SOM LIGADO";
         }
-        function playSound(f, t, d, v, s=false) {
+        function playSfx(f, t, d, v, s=false) {
             if (!audioCtx || isMuted) return;
             const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
             o.type = t; o.frequency.setValueAtTime(f, audioCtx.currentTime);
@@ -71,13 +73,23 @@
             o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + d);
         }
 
-        // --- SKINS ---
+        // --- SKINS DETALHADAS ---
         const bossSkins = [
-            { n: "Clipe de Aço", c: "#95a5a6" }, { n: "Borracha", c: "#ff7979" }, { n: "Apontador", c: "#7f8c8d" },
-            { n: "Régua", c: "#bdc3c7" }, { n: "Grampeador", c: "#2c3e50" }, { n: "Perfurador", c: "#34495e" },
-            { n: "Tesoura", c: "#c0392b" }, { n: "Cola Bastão", c: "#f1c40f" }, { n: "Estilete", c: "#1abc9c" },
-            { n: "Calculadora", c: "#2d3436" }, { n: "Compasso", c: "#7f8c8d" }, { n: "Tinta", c: "#e67e22" },
-            { n: "Esquadro", c: "#3498db" }, { n: "Fragmentadora", c: "#2d3436" }, { n: "PAPERMAN CORROMPIDO", c: "#000" }
+            { name: "Clipe de Aço", draw: (b) => { ctx.strokeStyle = "#7f8c8d"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(b.x+20, b.y+20); ctx.lineTo(b.x+80, b.y+20); ctx.arc(b.x+80, b.y+50, 30, -Math.PI/2, Math.PI/2); ctx.lineTo(b.x+40, b.y+80); ctx.arc(b.x+40, b.y+55, 25, Math.PI/2, -Math.PI/2, true); ctx.stroke(); }},
+            { name: "Borracha", draw: (b) => { ctx.fillStyle = "#ff7979"; ctx.fillRect(b.x, b.y, 100, 60); ctx.fillStyle="#badc58"; ctx.fillRect(b.x+70, b.y, 30, 60); ctx.strokeRect(b.x, b.y, 100, 60); }},
+            { name: "Apontador", draw: (b) => { ctx.fillStyle = "#95a5a6"; ctx.fillRect(b.x, b.y, 80, 80); ctx.fillStyle="#34495e"; ctx.beginPath(); ctx.arc(b.x+40, b.y+40, 20, 0, 7); ctx.fill(); }},
+            { name: "Régua", draw: (b) => { ctx.fillStyle = "#bdc3c7"; ctx.fillRect(b.x, b.y, 100, 30); ctx.fillStyle="#000"; for(let i=0; i<100; i+=10) ctx.fillRect(b.x+i, b.y, 2, 10); }},
+            { name: "Grampeador", draw: (b) => { ctx.fillStyle = "#2c3e50"; ctx.fillRect(b.x, b.y, 100, 40); ctx.fillStyle="#bdc3c7"; ctx.fillRect(b.x+5, b.y+35, 90, 10); }},
+            { name: "Perfurador", draw: (b) => { ctx.fillStyle = "#7f8c8d"; ctx.fillRect(b.x, b.y+40, 100, 20); ctx.fillRect(b.x+20, b.y, 20, 40); ctx.fillRect(b.x+60, b.y, 20, 40); }},
+            { name: "Tesoura", draw: (b) => { ctx.strokeStyle = "#34495e"; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(b.x+100, b.y+100); ctx.moveTo(b.x+100, b.y); ctx.lineTo(b.x, b.y+100); ctx.stroke(); ctx.fillStyle="#c0392b"; ctx.beginPath(); ctx.arc(b.x+15, b.y+15, 20, 0, 7); ctx.arc(b.x+85, b.y+15, 20, 0, 7); ctx.fill(); }},
+            { name: "Cola Bastão", draw: (b) => { ctx.fillStyle = "#f1c40f"; ctx.fillRect(b.x+30, b.y, 40, 100); ctx.fillStyle="#fff"; ctx.fillRect(b.x+30, b.y, 40, 20); }},
+            { name: "Estilete", draw: (b) => { ctx.fillStyle = "#1abc9c"; ctx.fillRect(b.x, b.y+30, 100, 40); ctx.fillStyle="#bdc3c7"; ctx.fillRect(b.x+100, b.y+35, 30, 30); }},
+            { name: "Calculadora", draw: (b) => { ctx.fillStyle = "#34495e"; ctx.fillRect(b.x, b.y, 80, 100); ctx.fillStyle="#95afc0"; ctx.fillRect(b.x+10, b.y+10, 60, 25); }},
+            { name: "Compasso", draw: (b) => { ctx.strokeStyle = "#7f8c8d"; ctx.lineWidth=4; ctx.beginPath(); ctx.moveTo(b.x+50, b.y); ctx.lineTo(b.x+30, b.y+100); ctx.moveTo(b.x+50, b.y); ctx.lineTo(b.x+70, b.y+100); ctx.stroke(); }},
+            { name: "Tinta Guache", draw: (b) => { ctx.fillStyle = "#e67e22"; ctx.beginPath(); ctx.arc(b.x+50, b.y+60, 40, 0, 7); ctx.fill(); ctx.fillStyle="#fff"; ctx.fillRect(b.x+30, b.y+10, 40, 20); }},
+            { name: "Esquadro", draw: (b) => { ctx.fillStyle = "rgba(52, 152, 219, 0.4)"; ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(b.x+100, b.y+100); ctx.lineTo(b.x, b.y+100); ctx.fill(); ctx.stroke(); }},
+            { name: "Fragmentadora", draw: (b) => { ctx.fillStyle = "#2d3436"; ctx.fillRect(b.x, b.y, 100, 100); ctx.fillStyle="#636e72"; ctx.fillRect(b.x+10, b.y+20, 80, 15); }},
+            { name: "PAPERMAN CORROMPIDO", draw: (b) => { ctx.shadowBlur = 15; ctx.shadowColor = "red"; ctx.fillStyle = "#1a1a1a"; ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(b.x+100, b.y+10); ctx.lineTo(b.x+90, b.y+100); ctx.lineTo(b.x+5, b.y+90); ctx.fill(); ctx.fillStyle = "red"; ctx.fillRect(b.x+25, b.y+30, 15, 5); ctx.fillRect(b.x+60, b.y+30, 15, 5); ctx.shadowBlur = 0; }}
         ];
 
         function initLevel() {
@@ -86,9 +98,9 @@
             const skinIdx = Math.min(level - 1, 14);
             const s = bossSkins[skinIdx];
             let bHp = 50 + (level * 35);
-            boss = { x: 350, y: 80, w: 100, h: 100, hp: bHp, maxHp: bHp, vx: 3 + (level*0.4), color: s.c, name: s.n, timer: 0 };
+            boss = { x: 350, y: 80, w: 100, h: 100, hp: bHp, maxHp: bHp, vx: 3 + (level*0.4), skin: s, timer: 0 };
             document.getElementById('lvlTxt').innerText = level;
-            document.getElementById('bossName').innerText = boss.name;
+            document.getElementById('bossName').innerText = boss.skin.name;
             document.getElementById('hp-fill').style.width = "100%";
             hp = 6; updateLivesUI();
         }
@@ -106,18 +118,13 @@
 
         window.onkeydown = (e) => keys[e.key.toLowerCase()] = true;
         window.onkeyup = (e) => keys[e.key.toLowerCase()] = false;
+        
         window.onmousedown = (e) => {
             if(isDead || isPaused) return;
             const rect = canvas.getBoundingClientRect();
             const angle = Math.atan2((e.clientY - rect.top) - (player.y + 25), (e.clientX - rect.left) - (player.x + 20));
-            bullets.push({ 
-                x: player.x + 20, 
-                y: player.y + 25, 
-                vx: Math.cos(angle) * 10, 
-                vy: Math.sin(angle) * 10,
-                path: [] // NOVO: Guarda o rastro
-            });
-            playSound(400, 'triangle', 0.1, 0.05, true);
+            bullets.push({ x: player.x + 20, y: player.y + 25, vx: Math.cos(angle) * 12, vy: Math.sin(angle) * 12, path: [] });
+            playSfx(400, 'triangle', 0.1, 0.05, true);
         };
 
         function update() {
@@ -131,7 +138,7 @@
             if(keys['a'] && player.x > 0) player.x -= player.speed;
             if(keys['d'] && player.x < 760) player.x += player.speed;
 
-            boss.x += boss.vx; if(boss.x < 0 || boss.x > 700) boss.vx *= -1;
+            boss.x += boss.vx; if(boss.x < 50 || boss.x > 650) boss.vx *= -1;
             boss.timer++;
             if(boss.timer > Math.max(15, 85 - (level*4))) {
                 const a = Math.atan2((player.y+25)-(boss.y+50), (player.x+20)-(boss.x+50));
@@ -140,16 +147,15 @@
             }
 
             bullets.forEach((b, i) => {
-                // NOVO: Adiciona a posição atual ao rastro
-                b.path.push({x: b.x, y: b.y, alpha: 1});
-                if(b.path.length > 10) b.path.shift(); // Limita o rastro
-
+                b.path.push({x: b.x, y: b.y}); if(b.path.length > 8) b.path.shift();
                 b.x += b.vx; b.y += b.vy;
-                if(b.x > boss.x && b.x < boss.x+100 && b.y > boss.y && b.y < boss.y+100) {
-                    boss.hp -= 10; bullets.splice(i, 1); playSound(600, 'square', 0.05, 0.03);
+                // COLISÃO CORRIGIDA
+                if(b.x > boss.x && b.x < boss.x + 100 && b.y > boss.y && b.y < boss.y + 100) {
+                    boss.hp -= 10; bullets.splice(i, 1);
+                    playSfx(600, 'square', 0.05, 0.03);
+                    document.getElementById('hp-fill').style.width = (boss.hp / boss.maxHp * 100) + "%";
                     if(boss.hp <= 0) {
-                        if(level >= 15) { alert("VITÓRIA TOTAL!"); level = 1; } 
-                        else { level++; }
+                        if(level >= 15) alert("VITÓRIA TOTAL!"); else level++;
                         initLevel();
                     }
                 } else if(b.x<0||b.x>800||b.y<0||b.y>600) bullets.splice(i, 1);
@@ -159,6 +165,7 @@
                 p.x += p.vx; p.y += p.vy;
                 if(Math.hypot(player.x+20-p.x, player.y+25-p.y) < 25 && invencible <= 0) {
                     hp--; invencible = 60; bossProjectiles.splice(i, 1); updateLivesUI();
+                    playSfx(150, 'sawtooth', 0.2, 0.1);
                     if(hp <= 0) { isDead = true; document.getElementById('gameOverOverlay').style.display = 'flex'; }
                 } else if(p.x<0||p.x>800||p.y<0||p.y>600) bossProjectiles.splice(i, 1);
             });
@@ -166,11 +173,12 @@
 
         function draw() {
             ctx.clearRect(0, 0, 800, 600);
+            // Grid
             ctx.strokeStyle = "rgba(0,0,0,0.05)"; ctx.lineWidth=1;
-            for(let i=0; i<800; i+=30){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,600);ctx.stroke();}
-            for(let i=0; i<600; i+=30){ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(800,i);ctx.stroke();}
+            for(let i=0;i<800;i+=30){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,600);ctx.stroke();}
+            for(let i=0;i<600;i+=30){ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(800,i);ctx.stroke();}
 
-            // Player Recortado
+            // Player Detalhado
             if(invencible % 10 < 5) {
                 ctx.save(); ctx.translate(player.x, player.y);
                 ctx.fillStyle = "white"; ctx.strokeStyle = "black"; ctx.lineWidth = 2;
@@ -180,33 +188,19 @@
                 ctx.restore();
             }
 
-            // NOVO: Desenho do Rastro sutil (poeira de lápis)
-            ctx.strokeStyle = "rgba(100,100,100,0.2)"; ctx.lineWidth=1;
+            // Tiros Visíveis com Rastro
             bullets.forEach(b => {
-                b.path.forEach((p, index) => {
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, 2 + index*0.5, 0, 7);
-                    ctx.stroke();
-                });
+                ctx.strokeStyle = "rgba(100,100,100,0.2)";
+                b.path.forEach((p, idx) => { ctx.beginPath(); ctx.arc(p.x, p.y, idx, 0, 7); ctx.stroke(); });
+                ctx.fillStyle = "white"; ctx.strokeStyle = "#444"; ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.arc(b.x, b.y, 8, 0, 7); ctx.fill(); ctx.stroke();
             });
 
-            // NOVO: Desenho da Bala (Bolinha de papel com borda)
-            ctx.fillStyle = "#ffffff"; ctx.strokeStyle = "#444"; ctx.lineWidth=2;
-            bullets.forEach(b => { 
-                ctx.beginPath(); 
-                ctx.arc(b.x, b.y, 8, 0, 7); // Bala maior (8px)
-                ctx.fill(); 
-                ctx.stroke();
-                // Detalhe interno de amassado
-                ctx.beginPath(); ctx.lineWidth=1;
-                ctx.moveTo(b.x-4, b.y); ctx.lineTo(b.x+2, b.y-2); ctx.stroke();
-            });
-
-            // Tiros do Boss
+            // Tiros Boss
             ctx.fillStyle = "red"; bossProjectiles.forEach(p => ctx.fillRect(p.x-5, p.y-5, 10, 10));
-            // Boss
-            ctx.fillStyle = boss.color; ctx.fillRect(boss.x, boss.y, 100, 100);
-            ctx.strokeStyle="black"; ctx.lineWidth=2; ctx.strokeRect(boss.x, boss.y, 100, 100);
+
+            // BOSS DETALHADO
+            if(boss) boss.skin.draw(boss);
 
             update(); requestAnimationFrame(draw);
         }
