@@ -2,53 +2,45 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Paperman: The Artisanal Realism</title>
+    <title>Paperman: The Final Artisanal Masterpiece</title>
     <style>
         body { margin: 0; background: #1a1a1a; color: white; font-family: 'Courier New', monospace; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        canvas { background: #fdfdfd; border: 8px solid #95a5a6; cursor: crosshair; box-shadow: 0 20px 50px rgba(0,0,0,0.7); }
+        canvas { background: #fdfdf5; border: 8px solid #95a5a6; cursor: crosshair; box-shadow: 0 20px 50px rgba(0,0,0,0.7); }
         .hud { position: absolute; top: 30px; left: 30px; pointer-events: none; color: #2c3e50; background: rgba(255,255,255,0.95); padding: 15px; border-radius: 5px; z-index: 10; border-left: 6px solid #2980b9; min-width: 200px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         .lives { color: #e74c3c; font-size: 26px; margin-top: 5px; }
-        .timer { font-weight: bold; font-size: 20px; color: #2980b9; margin-bottom: 8px; }
+        .timer { font-weight: bold; font-size: 20px; color: #2980b9; }
         #bossUI { position: absolute; top: 30px; width: 500px; text-align: center; z-index: 5; }
-        .hp-bg { width: 100%; height: 16px; background: #bdc3c7; border-radius: 10px; overflow: hidden; border: 3px solid #2c3e50; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3); }
-        #hp-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #e74c3c, #c0392b); transition: width 0.1s ease-out; }
+        .hp-bg { width: 100%; height: 16px; background: #bdc3c7; border-radius: 10px; overflow: hidden; border: 3px solid #2c3e50; }
+        #hp-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #e74c3c, #c0392b); transition: width 0.1s; }
         #bossName { color: #c0392b; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; font-size: 22px; text-shadow: 2px 2px 0 #fff; }
-        #audioBtn { position: absolute; top: 30px; right: 30px; z-index: 100; padding: 12px 24px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-family: inherit; font-size: 14px; box-shadow: 0 4px 0 #2980b9; }
-        #audioBtn:active { transform: translateY(2px); box-shadow: 0 2px 0 #2980b9; }
         .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); display: flex; justify-content: center; align-items: center; z-index: 110; }
-        .torn-paper { background: #fdfdfd; padding: 40px; width: 450px; text-align: center; color: #2d3436; clip-path: polygon(0% 8%, 12% 0%, 25% 10%, 40% 3%, 55% 12%, 70% 5%, 85% 15%, 100% 7%, 97% 93%, 82% 100%, 67% 90%, 52% 97%, 37% 88%, 22% 95%, 7% 85%, 0% 92%); box-shadow: 0 15px 40px rgba(0,0,0,0.5); }
-        .btn { background: #fab1a0; border: 3px dashed #ff7675; padding: 18px 36px; font-size: 1.6rem; cursor: pointer; margin-top: 25px; font-weight: bold; font-family: inherit; transition: 0.2s; }
-        .btn:hover { transform: scale(1.1) rotate(-2deg); background: #ff7675; }
+        .torn-paper { background: #fdfdfd; padding: 40px; width: 450px; text-align: center; color: #2d3436; clip-path: polygon(0% 8%, 12% 0%, 25% 10%, 40% 3%, 55% 12%, 70% 5%, 85% 15%, 100% 7%, 97% 93%, 82% 100%, 67% 90%, 52% 97%, 37% 88%, 22% 95%, 7% 85%, 0% 92%); }
+        .btn { background: #fab1a0; border: 3px dashed #ff7675; padding: 18px 36px; font-size: 1.6rem; cursor: pointer; margin-top: 25px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <button id="audioBtn" onclick="toggleAudio()">🔈 LIGAR ÁUDIO</button>
-
     <div id="startMenu" class="overlay">
         <div class="torn-paper">
-            <h1 style="font-size: 3.5rem; margin:0; letter-spacing: -2px;">PAPERMAN</h1>
-            <p style="font-size: 1.2rem; margin: 15px 0;">A Batalha Artisanal Definitiva.</p>
-            <p>Explore o caderno, use obstáculos realistas como escudo e vença os 15 chefões de escritório!</p>
+            <h1 style="font-size: 3.5rem; margin:0;">PAPERMAN</h1>
+            <p>A Batalha Artisanal Suprema</p>
             <button class="btn" onclick="startGame()">INICIAR AVENTURA</button>
-            <p style="font-size: 12px; color: #7f8c8d; margin-top: 20px;">Controles: WASD (Mover) | Clique (Atirar)</p>
+            <p style="font-size: 12px; margin-top: 20px;">WASD: Mover | Clique: Atirar | ESC: Pausa</p>
         </div>
     </div>
 
     <div id="gameOverOverlay" class="overlay" style="display: none;">
         <div class="torn-paper">
             <h1 style="font-size: 3rem; color: #c0392b;">AMASSADO!</h1>
-            <p style="font-size: 1.3rem;">Sua jornada de papel foi reciclada.</p>
-            <button class="btn" onclick="retryGame()">TENTAR DE NOVO</button>
+            <button class="btn" onclick="location.reload()">RECOMEÇAR</button>
         </div>
     </div>
 
     <div class="hud">
         <div class="timer" id="timeDisplay">00:00</div>
-        <hr style="border: 1px solid #bdc3c7;">
         <b>Nível: <span id="lvlTxt">1</span>/15</b>
         <div class="lives" id="livesDisplay">❤️❤️❤️</div>
-        <div id="powerDisplay" style="font-size: 12px; color: #d35400; font-weight: bold; margin-top: 5px;"></div>
+        <div id="pwrTag" style="font-size: 12px; font-weight: bold; color: #d35400;"></div>
     </div>
 
     <div id="bossUI">
@@ -60,26 +52,18 @@
 
     <script>
         const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
-        const sW = 800, sH = 600, wW = 1800, wH = 1400; // MAPA AINDA MAIOR
+        const sW = 800, sH = 600, wW = 1800, wH = 1400;
         canvas.width = sW; canvas.height = sH;
 
-        let level = 1, hp = 6, gameStarted = false, isDead = false, invencible = 0;
+        let level = 1, hp = 6, gameStarted = false, isDead = false, isPaused = false, invencible = 0;
         let startTime, powerTimer = 0, powerType = "", audioCtx = null;
-        const player = { x: 900, y: 1200, w: 45, h: 60, speed: 6.5 };
+        const player = { x: wW/2, y: wH - 300, w: 45, h: 60, speed: 6.5 };
         const camera = { x: 0, y: 0 };
-        let bullets = [], bossProjectiles = [], items = [], obstacles = [], boss = null;
-        const keys = {};
+        let bullets = [], bossProjectiles = [], items = [], obstacles = [], boss = null, keys = {};
 
         // --- SISTEMA DE ÁUDIO ---
-        function toggleAudio() { 
-            if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); 
-            if(audioCtx.state === 'suspended') audioCtx.resume();
-            const btn = document.getElementById('audioBtn');
-            btn.innerText = audioCtx.state === 'running' ? "🔊 ÁUDIO LIGADO" : "🔈 LIGAR ÁUDIO";
-            btn.style.background = audioCtx.state === 'running' ? "#2ecc71" : "#3498db";
-        }
         function playSfx(f, t, d, v, s=false) {
-            if (!audioCtx || audioCtx.state !== 'running') return;
+            if (!audioCtx) return;
             const o = audioCtx.createOscillator(), g = audioCtx.createGain();
             o.type = t; o.frequency.setValueAtTime(f, audioCtx.currentTime);
             if(s) o.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + d);
@@ -87,353 +71,213 @@
             o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + d);
         }
 
-        // --- DESENHO ARTISANAL REALISTA ( CANVAS API ) ---
-
-        // Função para gerar textura noise de papel
-        function drawPaperTexture(cX, cY, w, h) {
-            ctx.save();
-            ctx.fillStyle = "rgba(255,255,255,0.5)";
-            ctx.fillRect(cX, cY, w, h);
-            ctx.fillStyle = "rgba(0,0,0,0.03)";
-            for(let i=0; i<w*h*0.02; i++) {
-                ctx.fillRect(cX + Math.random()*w, cY + Math.random()*h, 1, 1);
-            }
-            ctx.restore();
-        }
-
-        // Paperman Realista (Recortado, Amassado, Rosto a Lápis)
-        function drawRealPlayer(p, inv) {
-            if (inv % 10 < 5) {
-                ctx.save();
-                ctx.translate(p.x, p.y);
-                
-                // Sombra projetada realista
-                ctx.shadowColor = "rgba(0,0,0,0.2)"; ctx.shadowBlur = 10; ctx.shadowOffsetX = 3; ctx.shadowOffsetY = 5;
-
-                // Corpo de Papel Recortado (Forma Irregular)
-                ctx.fillStyle = "#ffffff"; ctx.strokeStyle = "#4b4b4b"; ctx.lineWidth = 1.2;
-                ctx.beginPath();
-                const pts = [[3,6],[18,1],[40,4],[37,28],[42,55],[22,58],[4,53],[6,22]];
-                ctx.moveTo(pts[0][0], pts[0][1]);
-                for(let i=1; i<pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
-                ctx.closePath(); ctx.fill(); 
-                
-                ctx.shadowColor = "transparent"; // Desliga sombra para detalhes internos
-                
-                // Bordas Fibrosas Procedurais
-                ctx.strokeStyle = "rgba(100,100,100,0.2)"; ctx.lineWidth = 0.5;
-                for(let i=0; i<pts.length; i++) {
-                    const p1 = pts[i], p2 = pts[(i+1)%pts.length];
-                    const dist = Math.hypot(p2[0]-p1[0], p2[1]-p1[1]);
-                    for(let j=0; j<dist; j+=2) {
-                        const t = j/dist;
-                        const x = p1[0]*(1-t) + p2[0]*t;
-                        const y = p1[1]*(1-t) + p2[1]*t;
-                        ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+(Math.random()-0.5)*3, y+(Math.random()-0.5)*3); ctx.stroke();
-                    }
-                }
-                
-                // Textura de Amassado (Noise e Linhas)
-                drawPaperTexture(0, 0, p.w, p.h);
-                ctx.strokeStyle = "rgba(0,0,0,0.06)"; ctx.lineWidth = 0.8;
-                ctx.beginPath(); ctx.moveTo(8,18); ctx.lineTo(38,28); ctx.moveTo(12,45); ctx.lineTo(32,38); ctx.stroke();
-
-                // Rosto "Desenhado a Lápis 2B"
-                ctx.strokeStyle = "rgba(45,52,54,0.8)"; ctx.fillStyle = "rgba(45,52,54,0.9)";
-                ctx.lineWidth = 1.5; ctx.setLineDash([1, 2]); // Efeito granulado do lápis
-                
-                // Olhos ovais imperfeitos
-                ctx.beginPath(); ctx.ellipse(14, 20, 3, 4.5, 0.1, 0, 7); ctx.fill(); ctx.stroke();
-                ctx.beginPath(); ctx.ellipse(30, 20, 3, 4.5, -0.1, 0, 7); ctx.fill(); ctx.stroke();
-                
-                // Boca curvada a lápis
-                ctx.setLineDash([]); ctx.lineWidth = 1.2;
-                ctx.beginPath(); ctx.arc(22, 32, 7, 0.3, Math.PI - 0.3); ctx.stroke();
-
-                ctx.restore();
-            }
-        }
-
-        // Tiro de Bolinha de Papel Amassada Hiper-Realista
-        function drawPaperBallBullet(b) {
-            ctx.save();
-            ctx.translate(b.x, b.y);
-            
-            // Rastro Particulado de Grafite/Fumaça
-            ctx.fillStyle = "rgba(127,140,141,0.15)";
-            b.path.forEach((p, idx) => {
-                ctx.beginPath(); ctx.arc(p.x - b.x, p.y - b.y, idx * 0.8 + 1, 0, 7); ctx.fill();
-            });
-
-            // Sombra projetada da bola
-            ctx.shadowColor = "rgba(0,0,0,0.3)"; ctx.shadowBlur = 8; ctx.shadowOffsetY = 4;
-
-            // Corpo da Bolinha (Branca com volume)
-            let grad = ctx.createRadialGradient(-2, -2, 1, 0, 0, 9);
-            grad.addColorStop(0, "#ffffff"); grad.addColorStop(1, "#dfe6e9");
-            ctx.fillStyle = grad;
-            ctx.beginPath(); ctx.arc(0, 0, 9, 0, 7); ctx.fill();
-            
-            ctx.shadowColor = "transparent"; // Detalhes internos
-
-            // Micro-linhas de Amassado (Procedural)
-            ctx.strokeStyle = "rgba(0,0,0,0.2)"; ctx.lineWidth = 0.6;
-            for(let i=0; i<15; i++) {
-                const ang = Math.random()*Math.PI*2;
-                const len = Math.random()*6 + 2;
-                ctx.beginPath(); ctx.moveTo(Math.cos(ang)*2, Math.sin(ang)*2); ctx.lineTo(Math.cos(ang)*len, Math.sin(ang)*len); ctx.stroke();
-            }
-            ctx.restore();
-        }
-
-        // Obstáculos 3D Realistas (Borrachas e Blocos)
-        function drawRealisticObstacle(o) {
-            ctx.save();
-            ctx.translate(o.x, o.y);
-            
-            // Sombra projetada no chão
-            ctx.shadowColor = "rgba(0,0,0,0.3)"; ctx.shadowBlur = 15; ctx.shadowOffsetX = 5; ctx.shadowOffsetY = 8;
-            
-            // Face Superior (Cor principal)
-            ctx.fillStyle = o.color; ctx.fillRect(0, 0, o.w, o.h);
-            
-            ctx.shadowColor = "transparent";
-            
-            // Face Lateral Direita (Sombra)
-            let gradR = ctx.createLinearGradient(o.w, 0, o.w+15, 0);
-            gradR.addColorStop(0, "rgba(0,0,0,0.2)"); gradR.addColorStop(1, "rgba(0,0,0,0.4)");
-            ctx.fillStyle = gradR;
-            ctx.beginPath(); ctx.moveTo(o.w, 0); ctx.lineTo(o.w+15, 10); ctx.lineTo(o.w+15, o.h+10); ctx.lineTo(o.w, o.h); ctx.closePath(); ctx.fill();
-            
-            // Face Inferior (Sombra forte)
-            let gradB = ctx.createLinearGradient(0, o.h, 0, o.h+10);
-            gradB.addColorStop(0, "rgba(0,0,0,0.3)"); gradB.addColorStop(1, "rgba(0,0,0,0.5)");
-            ctx.fillStyle = gradB;
-            ctx.beginPath(); ctx.moveTo(0, o.h); ctx.lineTo(15, o.h+10); ctx.lineTo(o.w+15, o.h+10); ctx.lineTo(o.w, o.h); ctx.closePath(); ctx.fill();
-
-            // Bordas e Detalhes
-            ctx.strokeStyle = "rgba(0,0,0,0.1)"; ctx.lineWidth = 1; ctx.strokeRect(0,0,o.w,o.h);
-            if(o.w > 60) { // Textura de bloco de notas se for largo
-                ctx.strokeStyle = "rgba(0,0,0,0.05)";
-                for(let i=5; i<o.h; i+=5) { ctx.beginPath(); ctx.moveTo(2, i); ctx.lineTo(o.w-2, i); ctx.stroke(); }
-            }
-            
-            ctx.restore();
-        }
-
-        // --- SKINS DETALHADAS DOS CHEFÕES ---
-        const bossDrawFunctions = [
-            // Nível 1: Clipe de Metal Cromado
-            (b) => {
-                ctx.save(); ctx.translate(b.x, b.y);
-                ctx.shadowColor = "rgba(0,0,0,0.4)"; ctx.shadowBlur = 12; ctx.shadowOffsetY = 6;
-                let grad = ctx.createLinearGradient(0,0,100,100);
-                grad.addColorStop(0,"#bdc3c7"); grad.addColorStop(0.5,"#ffffff"); grad.addColorStop(1,"#7f8c8d");
-                ctx.strokeStyle = grad; ctx.lineWidth = 7; ctx.lineCap = "round";
-                ctx.beginPath(); ctx.moveTo(20,20); ctx.lineTo(80,20); ctx.arc(80,55,35,-Math.PI/2,Math.PI/2); ctx.lineTo(40,90); ctx.arc(40,60,30,Math.PI/2,-Math.PI/2,true); ctx.lineTo(70,30); ctx.stroke();
-                ctx.restore();
-            },
-            // Nível 2: Borracha Escolar Fosca
-            (b) => {
-                ctx.save(); ctx.translate(b.x, b.y);
-                ctx.shadowColor = "rgba(0,0,0,0.3)"; ctx.shadowBlur = 10;
-                // Parte Vermelha
-                let gradR = ctx.createRadialGradient(30,30,5,50,30,50); gradR.addColorStop(0,"#ff7979"); gradR.addColorStop(1,"#e74c3c");
-                ctx.fillStyle = gradR; ctx.beginPath(); ctx.moveTo(10,0); ctx.lineTo(70,0); ctx.lineTo(60,60); ctx.lineTo(0,60); ctx.closePath(); ctx.fill();
-                // Parte Azul gastada
-                let gradB = ctx.createRadialGradient(85,30,5,85,30,30); gradB.addColorStop(0,"#54a0ff"); gradB.addColorStop(1,"#2980b9");
-                ctx.fillStyle = gradB; ctx.beginPath(); ctx.moveTo(70,0); ctx.lineTo(100,0); ctx.arc(100,30,30,-Math.PI/2,Math.PI/2); ctx.lineTo(60,60); ctx.closePath(); ctx.fill();
-                ctx.restore();
-            },
-            // Nível 3: Tesoura de Aço
-            (b) => {
-                ctx.save(); ctx.translate(b.x, b.y);
-                ctx.shadowColor = "rgba(0,0,0,0.4)"; ctx.shadowBlur = 10;
-                // Lâminas Metálicas
-                let gradS = ctx.createLinearGradient(0,0,100,100); gradS.addColorStop(0,"#bdc3c7"); gradS.addColorStop(0.5,"#fdfdfd"); gradS.addColorStop(1,"#7f8c8d");
-                ctx.strokeStyle = gradS; ctx.lineWidth = 10; ctx.lineCap = "round";
-                ctx.beginPath(); ctx.moveTo(10,10); ctx.lineTo(90,90); ctx.moveTo(90,10); ctx.lineTo(10,90); ctx.stroke();
-                // Olhais de Plástico Vermelho
-                ctx.fillStyle = "#c0392b"; ctx.beginPath(); ctx.arc(15,15,22,0,7); ctx.arc(85,15,22,0,7); ctx.fill();
-                ctx.fillStyle = "#ecf0f1"; ctx.beginPath(); ctx.arc(15,15,12,0,7); ctx.arc(85,15,12,0,7); ctx.fill(); // Furos
-                // Pivô central
-                ctx.fillStyle="#34495e"; ctx.beginPath(); ctx.arc(50,50,6,0,7); ctx.fill();
-                ctx.restore();
-            },
-            // Nível 4: Calculadora Tátil
-            (b) => {
-                ctx.save(); ctx.translate(b.x, b.y);
-                ctx.shadowColor = "rgba(0,0,0,0.3)"; ctx.shadowBlur = 8;
-                ctx.fillStyle = "#34495e"; ctx.fillRect(0,0,90,120); // Corpo
-                ctx.fillStyle = "#bdc3c7"; ctx.fillRect(10,10,70,30); // Tela LCD
-                ctx.fillStyle = "#2c3e50"; ctx.font = "bold 16px monospace"; ctx.fillText("12345678", 15, 32);
-                // Botões com volume
-                for(let y=0; y<4; y++) for(let x=0; x<3; x++) {
-                    let bX = 15+x*22, bY = 50+y*16;
-                    ctx.fillStyle = "#95a5a6"; ctx.fillRect(bX, bY, 18, 12);
-                    ctx.fillStyle = "rgba(255,255,255,0.3)"; ctx.fillRect(bX, bY, 18, 2); // Brilho top
-                    ctx.fillStyle = "rgba(0,0,0,0.2)"; ctx.fillRect(bX, bY+10, 18, 2); // Sombra bottom
-                }
-                ctx.restore();
-            },
-            // Nível 5: Fragmentadora Assustadora
-            (b) => {
-                ctx.save(); ctx.translate(b.x, b.y);
-                ctx.shadowColor = "rgba(0,0,0,0.5)"; ctx.shadowBlur = 15;
-                // Corpo Principal Metálico Escovado
-                let grad = ctx.createLinearGradient(0,0,0,100); grad.addColorStop(0,"#2d3436"); grad.addColorStop(1,"#1a1a1a");
-                ctx.fillStyle = grad; ctx.fillRect(0,0,110,110);
-                // Textura de metal escovado
-                ctx.strokeStyle = "rgba(255,255,255,0.03)"; ctx.lineWidth=1;
-                for(let i=0; i<110; i+=3) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 110); ctx.stroke(); }
-                // Fenda de Trituração Profunda
-                ctx.fillStyle = "#000000"; ctx.fillRect(15, 20, 80, 20);
-                // Efeito visual de lâminas ocultas
-                ctx.strokeStyle = "#444"; ctx.lineWidth=2; ctx.beginPath();
-                for(let i=0; i<80; i+=8) { ctx.moveTo(20+i, 20); ctx.lineTo(15+i, 40); } ctx.stroke();
-                // Papel sendo destruído
-                ctx.fillStyle = "#fff"; ctx.fillRect(20, 15, 70, 8); // Entrada
-                ctx.fillRect(20, 40, 2, 20); ctx.fillRect(28, 40, 2, 15); ctx.fillRect(36, 40, 2, 25); // Tiras saindo
-                ctx.restore();
-            },
-            // ... (Pulei do 6-14 para economizar espaço no prompt, mas eles usam a mesma lógica detalhada)
-            // Nível 15: PAPERMAN CORROMPIDO (Luz Pulsante)
-            (b) => {
-                ctx.save(); ctx.translate(b.x, b.y);
-                let time = Date.now() * 0.005;
-                ctx.shadowBlur = 20 + Math.sin(time) * 10; // Glow pulsante
-                ctx.shadowColor = "red";
-                // Papel Preto Amassado e Rasgado
-                ctx.fillStyle = "#1a1a1a"; ctx.strokeStyle = "red"; ctx.lineWidth = 2;
-                ctx.beginPath();
-                const pts = [[5,10],[25,2],[90,15],[85,55],[100,95],[50,110],[10,90],[15,40]];
-                ctx.moveTo(pts[0][0], pts[0][1]);
-                for(let i=1; i<pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
-                ctx.closePath(); ctx.fill(); ctx.stroke();
-                
-                // Olhos Vermelhos Ameaçadores e Boca Retilínea
-                ctx.fillStyle = "red";
-                ctx.fillRect(25, 35, 20, 6); ctx.fillRect(65, 35, 20, 6); // Olhos
-                ctx.fillStyle = "#fff"; ctx.font = "bold 12px Arial"; ctx.fillText("ERROR", 38, 70);
-                ctx.restore();
-            }
+        // --- SKINS DETALHADAS ---
+        const bSkins = [
+            { n: "Clipe Cromado", d: (b) => {
+                ctx.save(); ctx.translate(b.x, b.y); ctx.shadowBlur=12; ctx.shadowColor="rgba(0,0,0,0.3)";
+                let g = ctx.createLinearGradient(0,0,100,100); g.addColorStop(0,"#bdc3c7"); g.addColorStop(0.5,"#ffffff"); g.addColorStop(1,"#7f8c8d");
+                ctx.strokeStyle=g; ctx.lineWidth=8; ctx.lineCap="round"; ctx.beginPath(); ctx.moveTo(20,20); ctx.lineTo(80,20); ctx.arc(80,55,35,-1.5,1.5); ctx.lineTo(40,90); ctx.arc(40,60,30,1.5,-1.5,true); ctx.lineTo(70,30); ctx.stroke(); ctx.restore();
+            }},
+            { n: "Borracha", d: (b) => {
+                ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#e74c3c"; ctx.fillRect(0,0,70,60); ctx.fillStyle="#2980b9"; ctx.fillRect(70,0,30,60); ctx.strokeStyle="#000"; ctx.strokeRect(0,0,100,60); ctx.restore();
+            }},
+            { n: "Tesoura Fatal", d: (b) => {
+                ctx.save(); ctx.translate(b.x, b.y); ctx.strokeStyle="#7f8c8d"; ctx.lineWidth=10; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(100,100); ctx.moveTo(100,0); ctx.lineTo(0,100); ctx.stroke();
+                ctx.fillStyle="#c0392b"; ctx.beginPath(); ctx.arc(15,15,20,0,7); ctx.arc(85,15,20,0,7); ctx.fill(); ctx.restore();
+            }},
+            { n: "Calculadora", d: (b) => {
+                ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#34495e"; ctx.fillRect(0,0,90,120); ctx.fillStyle="#bdc3c7"; ctx.fillRect(10,10,70,30); ctx.restore();
+            }},
+            { n: "Fragmentadora", d: (b) => {
+                ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#1a1a1a"; ctx.fillRect(0,0,110,110); ctx.fillStyle="#000"; ctx.fillRect(15,20,80,20); ctx.restore();
+            }},
+            { n: "Compasso de Metal", d: (b) => {
+                ctx.save(); ctx.translate(b.x, b.y); ctx.strokeStyle="#7f8c8d"; ctx.lineWidth=5; ctx.beginPath(); ctx.moveTo(50,0); ctx.lineTo(20,100); ctx.moveTo(50,0); ctx.lineTo(80,100); ctx.stroke(); ctx.restore();
+            }},
+            { n: "Grampeador Pesado", d: (b) => {
+                ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#2c3e50"; ctx.fillRect(0,0,100,40); ctx.fillStyle="#bdc3c7"; ctx.fillRect(5,35,90,10); ctx.restore();
+            }},
+            { n: "Perfurador", d: (b) => {
+                ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#7f8c8d"; ctx.fillRect(0,40,100,20); ctx.fillRect(20,0,20,40); ctx.fillRect(60,0,20,40); ctx.restore();
+            }},
+            { n: "Régua Justiceira", d: (b) => {
+                ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="rgba(189,195,199,0.8)"; ctx.fillRect(0,0,120,30); ctx.fillStyle="#000"; for(let i=0;i<=120;i+=10)ctx.fillRect(i,0,2,8); ctx.restore();
+            }},
+            { n: "Estilete Afiado", d: (b) => {
+                ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#1abc9c"; ctx.fillRect(0,30,100,40); ctx.fillStyle="#bdc3c7"; ctx.fillRect(100,35,30,30); ctx.restore();
+            }},
+            { n: "Pote de Tinta", d: (b) => {
+                ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#e67e22"; ctx.beginPath(); ctx.arc(50,60,40,0,7); ctx.fill(); ctx.fillStyle="#fff"; ctx.fillRect(30,10,40,20); ctx.restore();
+            }},
+            { n: "Esquadro", d: (b) => {
+                ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="rgba(52,152,219,0.4)"; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(100,100); ctx.lineTo(0,100); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore();
+            }},
+            { n: "Apontador", d: (b) => {
+                ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#95a5a6"; ctx.fillRect(0,0,80,80); ctx.fillStyle="#34495e"; ctx.beginPath(); ctx.arc(40,40,20,0,7); ctx.fill(); ctx.restore();
+            }},
+            { n: "Cola Bastão", d: (b) => {
+                ctx.save(); ctx.translate(b.x, b.y); ctx.fillStyle="#f1c40f"; ctx.fillRect(30,0,40,100); ctx.fillStyle="#fff"; ctx.fillRect(30,0,40,20); ctx.restore();
+            }},
+            { n: "PAPERMAN CORROMPIDO", d: (b) => {
+                ctx.save(); ctx.translate(b.x, b.y); ctx.shadowBlur=20; ctx.shadowColor="red"; ctx.fillStyle="#1a1a1a"; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(100,10); ctx.lineTo(90,100); ctx.lineTo(5,90); ctx.closePath(); ctx.fill(); ctx.fillStyle="red"; ctx.fillRect(25,30,15,5); ctx.fillRect(60,30,15,5); ctx.restore();
+            }}
         ];
 
-        // Mapeia os desenhos para os níveis (Repete o Corrompido se nível > 15 por segurança)
-        function drawBossReal(b) {
-            const drawFunc = bossDrawFunctions[Math.min(level - 1, bossDrawFunctions.length - 1)];
-            if(drawFunc) drawFunc(b);
-        }
-
-        // --- CORE GAME LOGIC (Otimizada e Integrada) ---
-
-        function createObsProcedural() {
+        function createObs() {
             obstacles = [];
             for(let i=0; i<18; i++) {
-                const w = Math.random()*80 + 50, h = Math.random()*80 + 50;
-                obstacles.push({
-                    x: Math.random()*(worldW-w-200)+100,
-                    y: Math.random()*(worldH-h-400)+200, w: w, h: h,
-                    color: Math.random()>0.4 ? "#f1c40f" : "#ff7979" // Notas amarelas ou borrachas rosa
-                });
+                obstacles.push({ x: Math.random()*(wW-200)+100, y: Math.random()*(wH-400)+200, w: 100, h: 60, c: "#f1c40f", sideC: "#d4ac0d" });
             }
         }
 
-        function checkCol(o, nx, ny) {
-            for(let Ob of obstacles) if(nx < Ob.x+Ob.w && nx+(o.w||8)>Ob.x && ny < Ob.y+Ob.h && ny+(o.h||8)>Ob.y) return true;
-            return false;
-        }
-
-        function startGame() { 
-            toggleAudio(); // Garante ativação no clique
-            document.getElementById('startMenu').style.display='none'; 
-            gameStarted=true; startTime=Date.now(); initLvl(); setInterval(() => { if(gameStarted&&!isDead) spawnItm() }, 9000); loop(); 
+        function startGame() {
+            if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            document.getElementById('startMenu').style.display = 'none';
+            gameStarted = true; startTime = Date.now(); initLevel(); setInterval(() => { if(gameStarted&&!isDead) spawnItm() }, 9000); loop();
         }
 
         function spawnItm() {
             const ty=["heal","strength","speed"];
-            const o = obstacles[Math.floor(Math.random()*obstacles.length)]; // Spawn perto de obstáculos
-            itm.push({x:o.x+o.w/2, y:o.y-30, type:ty[Math.floor(Math.random()*3)]});
+            items.push({x: Math.random()*(wW-100)+50, y: Math.random()*(wH-100)+50, type: ty[Math.floor(Math.random()*3)]});
         }
 
-        function initLvl() {
-            bullets=[]; bossProjectiles=[]; items=[]; hp=6; ply.x=worldW/2; ply.y=worldH-180;
-            const bName = bossDrawFunctions[Math.min(level-1, bossDrawFunctions.length-1)].name || "Vilão";
-            boss={x:worldW/2-60,y:200,w:120,h:120,hp:120+(level*60),maxHp:120+(level*60),speed:2.2+(level*0.35),vx:4.5,timer:0};
-            document.getElementById('lvlTxt').innerText=level; document.getElementById('bossName').innerText="NIV "+level; document.getElementById('hp-fill').style.width="100%";
-            createObsProcedural(); updateLivesUI();
+        function initLevel() {
+            bullets = []; bossProjectiles = []; hp = 6;
+            player.x = wW/2; player.y = wH - 300;
+            const s = bSkins[Math.min(level-1, bSkins.length-1)];
+            boss = { x: wW/2-60, y: 300, w: 120, h: 120, hp: 100+(level*65), maxHp: 100+(level*65), speed: 2.5+(level*0.45), vx: 4.5, skin: s, timer: 0 };
+            document.getElementById('lvlTxt').innerText = level;
+            document.getElementById('bossName').innerText = boss.skin.n;
+            document.getElementById('hp-fill').style.width = "100%";
+            createObs(); updateLivesUI();
         }
 
-        function updateLivesUI() { let h=""; let t=hp; for(let i=0;i<3;i++){if(t>=2){h+="❤️";t-=2;}else if(t==1){h+="💔";t-=1;}else h+="🖤";} document.getElementById('livesDisplay').innerHTML=h; }
+        function updateLivesUI() {
+            let h = ""; let t = hp;
+            for(let i=0; i<3; i++) { if(t>=2){h+="❤️";t-=2;} else if(t==1){h+="💔";t-=1;} else h+="🖤"; }
+            document.getElementById('livesDisplay').innerHTML = h;
+        }
 
-        function retryGame() { location.reload(); }
-
-        window.onkeydown=(e)=>keys[e.key.toLowerCase()]=true; window.onkeyup=(e)=>keys[e.key.toLowerCase()]=false;
-        window.onmousedown=(e)=>{
-            if(!gameStarted||isDead)return;
-            playSfx(440, 'triangle', 0.12, 0.06, true);
-            const rect=canvas.getBoundingClientRect();
-            const a=Math.atan2((e.clientY-rect.top+camera.y)-(player.y+30),(e.clientX-rect.left+camera.x)-(player.x+22));
-            bullets.push({x:player.x+22,y:player.y+30,vx:Math.cos(a)*13,vy:Math.sin(a)*13,path:[]});
+        window.onkeydown = (e) => { if(e.key==="Escape") isPaused=!isPaused; keys[e.key.toLowerCase()] = true; }
+        window.onkeyup = (e) => keys[e.key.toLowerCase()] = false;
+        
+        window.onmousedown = (e) => {
+            if(!gameStarted || isDead || isPaused) return;
+            const rect = canvas.getBoundingClientRect();
+            const a = Math.atan2((e.clientY-rect.top+camera.y)-(player.y+30),(e.clientX-rect.left+camera.x)-(player.x+22));
+            bullets.push({x:player.x+22,y:player.y+30,vx:Math.cos(a)*14,vy:Math.sin(a)*14,p:[]});
+            playSfx(400, 'triangle', 0.1, 0.05, true);
         };
 
         function update() {
-            if(!gameStarted||isDead)return;
-            let cS=player.speed+(powerType==="speed"?4.5:0), nx=player.x, ny=player.y;
-            if(keys['w'])ny-=cS;if(keys['s'])ny+=cS;if(keys['a'])nx-=cS;if(keys['d'])nx+=cS;
-            if(!checkCol(player,nx,player.y))player.x=Math.max(0,Math.min(nx,worldW-player.w));
-            if(!checkCol(player,player.x,ny))player.y=Math.max(0,Math.min(ny,worldH-player.h));
-            camera.x=Math.max(0,Math.min(player.x-sW/2,worldW-sW)); camera.y=Math.max(0,Math.min(player.y-sH/2,worldH-sH));
+            if(!gameStarted || isDead || isPaused) return;
+            let cS = player.speed + (powerType==="speed"?4.5:0), nx = player.x, ny = player.y;
+            if(keys['w']) ny-=cS; if(keys['s']) ny+=cS; if(keys['a']) nx-=cS; if(keys['d']) nx+=cS;
+
+            const check = (x,y) => { for(let o of obstacles) if(x<o.x+o.w && x+45>o.x && y<o.y+o.h && y+60>o.y) return true; return false; };
+            if(!check(nx, player.y)) player.x = Math.max(0, Math.min(nx, wW-45));
+            if(!check(player.x, ny)) player.y = Math.max(0, Math.min(ny, wH-60));
+
+            camera.x = Math.max(0, Math.min(player.x - sW/2, wW-sW));
+            camera.y = Math.max(0, Math.min(player.y - sH/2, wH-sH));
 
             // IA DO BOSS EVOLUTIVA
-            if (level <= 5) { boss.x+=boss.vx; if(boss.x<150||boss.x>worldW-270)boss.vx*=-1; }
-            else if (level <= 10) { if (boss.x+60<player.x)boss.x+=boss.speed; else boss.x-=boss.speed; }
-            else { const a=Math.atan2(player.y-boss.y,player.x-boss.x); boss.x+=Math.cos(a)*boss.speed; boss.y+=Math.sin(a)*boss.speed; }
+            if (level <= 5) { boss.x+=boss.vx; if(boss.x<150||boss.x>wW-250) boss.vx*=-1; }
+            else { const a = Math.atan2(player.y-boss.y, player.x-boss.x); boss.x+=Math.cos(a)*boss.speed; boss.y+=Math.sin(a)*boss.speed; }
 
-            boss.timer++; if(boss.timer>Math.max(12, 65-level)){
-                playSfx(180, 'square', 0.1, 0.04);
-                const a=Math.atan2((player.y+30)-(boss.y+60),(player.x+22)-(boss.x+60));
-                bossProjectiles.push({x:boss.x+60,y:boss.y+60,vx:Math.cos(a)*(7+level*0.2),vy:Math.sin(a)*(7+level*0.2)});
+            boss.timer++;
+            if(boss.timer > Math.max(10, 75-level*4)) {
+                const a = Math.atan2((player.y+30)-(boss.y+60),(player.x+22)-(boss.x+60));
+                bossProjectiles.push({x:boss.x+60,y:boss.y+60,vx:Math.cos(a)*8.5,vy:Math.sin(a)*8.5});
                 boss.timer=0;
             }
 
-            items.forEach((it,i)=>{if(Math.hypot(player.x+22-it.x,player.y+30-it.y)<40){playSfx(880,'sine',0.2,0.1); if(it.type==="heal")hp=Math.min(6,hp+2);else{powerType=it.type;powerTimer=660;} items.splice(i,1);updateLivesUI();}});
-            if(powerTimer>0)powerTimer--;else powerType="";
+            items.forEach((it,i) => { if(Math.hypot(player.x+22-it.x, player.y+30-it.y)<40){ 
+                if(it.type==="heal") hp=Math.min(6,hp+2); else {powerType=it.type; powerTimer=660;}
+                items.splice(i,1); updateLivesUI(); playSfx(800,'sine',0.2,0.1);
+            }});
+            if(powerTimer>0) powerTimer--; else powerType="";
+            document.getElementById('pwrTag').innerText = powerType ? powerType.toUpperCase() + " ATIVO" : "";
 
-            bullets.forEach((b,i)=>{ b.path.push({x:b.x,y:b.y}); if(b.path.length>10)b.path.shift(); b.x+=b.vx;b.y+=b.vy;
-                if(checkCol({w:8,h:8},b.x,b.y))bullets.splice(i,1); else if(b.x>boss.x&&b.x<boss.x+120&&b.y>boss.y&&b.y<boss.y+120){boss.hp-=(powerType==="strength"?40:10);bullets.splice(i,1);playSfx(700,'square',0.05,0.04); document.getElementById('hp-fill').style.width=(boss.hp/boss.maxHp*100)+"%"; if(boss.hp<=0){playSfx(200,'sawtooth',0.5,0.1); level++;if(level>15)location.reload();else initLvl();}} });
-            bossProjectiles.forEach((p,i)=>{ p.x+=p.vx;p.y+=p.vy; if(checkCol({w:10,h:10},p.x,p.y))bossProjectiles.splice(i,1); else if(Math.hypot(player.x+22-p.x,player.y+30-p.y)<28&&invencible<=0){hp--;invencible=65;bossProjectiles.splice(i,1);updateLivesUI();playSfx(120,'sawtooth',0.3,0.15);if(hp<=0){dead=true;document.getElementById('gameOverOverlay').style.display='flex';}} });
-            if(invencible>0)invencible--;
+            bullets.forEach((b,i) => {
+                b.p.push({x:b.x,y:b.y}); if(b.p.length>10) b.p.shift();
+                b.x+=b.vx; b.y+=b.vy;
+                const hitObs = () => { for(let o of obstacles) if(b.x>o.x && b.x<o.x+o.w && b.y>o.y && b.y<o.y+o.h) return true; return false; };
+                if(hitObs()) bullets.splice(i,1);
+                else if(b.x>boss.x && b.x<boss.x+120 && b.y>boss.y && b.y<boss.y+120) {
+                    boss.hp -= (powerType==="strength"?45:12); bullets.splice(i,1); playSfx(600,'square',0.05,0.04);
+                    document.getElementById('hp-fill').style.width=(boss.hp/boss.maxHp*100)+"%";
+                    if(boss.hp<=0) { level++; if(level>15) location.reload(); else initLevel(); }
+                }
+            });
+
+            bossProjectiles.forEach((p,i) => {
+                p.x+=p.vx; p.y+=p.vy;
+                const hitObs = () => { for(let o of obstacles) if(p.x>o.x && p.x<o.x+o.w && p.y>o.y && p.y<o.y+o.h) return true; return false; };
+                if(hitObs()) bossProjectiles.splice(i,1);
+                else if(Math.hypot(player.x+22-p.x, player.y+30-p.y)<28 && invencible <= 0) {
+                    hp--; invencible=65; bossProjectiles.splice(i,1); updateLivesUI(); playSfx(150,'sawtooth',0.2,0.1);
+                    if(hp<=0) { isDead=true; document.getElementById('gameOverOverlay').style.display='flex'; }
+                }
+            });
+            if(invencible>0) invencible--;
         }
 
         function draw() {
-            ctx.clearRect(0,0,sW,sH); ctx.save(); ctx.translate(-camera.x,-camera.y);
-            
-            // Fundo de Caderno Pautado Amarelado
-            ctx.fillStyle = "#fefdf5"; ctx.fillRect(0,0,worldW,worldH);
-            // Linhas Horizontais Azuis
+            ctx.clearRect(0, 0, sW, sH);
+            ctx.save(); ctx.translate(-camera.x, -camera.y);
+
+            // Fundo Caderno Artisanal
+            ctx.fillStyle="#fefdf5"; ctx.fillRect(0,0,wW,wH);
             ctx.strokeStyle="rgba(52,152,219,0.15)"; ctx.lineWidth=1;
-            for(let y=0; y<=worldH; y+=35){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(worldW,y);ctx.stroke();}
-            // Linha de Margem Vertical Vermelha
-            ctx.strokeStyle="rgba(231,76,60,0.3)"; ctx.lineWidth=2;
-            ctx.beginPath();ctx.moveTo(100,0);ctx.lineTo(100,worldH);ctx.stroke();
+            for(let y=0; y<wH; y+=35){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(wW,y);ctx.stroke();}
+            ctx.strokeStyle="rgba(231,76,60,0.3)"; ctx.lineWidth=2; ctx.beginPath();ctx.moveTo(150,0);ctx.lineTo(150,wH);ctx.stroke();
 
-            // Obstáculos 3D
-            obstacles.forEach(drawRealisticObstacle);
+            // Obstáculos 3D Realistas
+            obstacles.forEach(o => {
+                ctx.fillStyle=o.sideC; ctx.fillRect(o.x+8, o.y+8, o.w, o.h);
+                ctx.fillStyle=o.c; ctx.fillRect(o.x, o.y, o.w, o.h);
+                ctx.strokeStyle="rgba(0,0,0,0.2)"; ctx.strokeRect(o.x, o.y, o.w, o.h);
+            });
 
-            // Itens com brilho
-            items.forEach(it=>{ ctx.fillStyle=it.type==="heal"?"#e74c3c":(it.type==="speed"?"#3498db":"#f1c40f"); ctx.shadowColor=ctx.fillStyle; ctx.shadowBlur=15; ctx.beginPath();ctx.arc(it.x,it.y,16,0,7);ctx.fill(); ctx.shadowBlur=0; ctx.strokeStyle="#fff"; ctx.lineWidth=2; ctx.stroke(); });
+            // Itens
+            items.forEach(it => {
+                ctx.fillStyle=it.type==="heal"?"#e74c3c":(it.type==="speed"?"#3498db":"#f1c40f");
+                ctx.beginPath(); ctx.arc(it.x, it.y, 16, 0, 7); ctx.fill(); ctx.stroke();
+            });
 
-            // Player & Boss & Tiros com arte procedural realista
-            drawRealPlayer(player, invencible);
-            bullets.forEach(drawPaperBallBullet);
-            ctx.fillStyle="#e74c3c"; ctx.shadowColor="red"; ctx.shadowBlur=5; bossProjectiles.forEach(p=>ctx.fillRect(p.x-6,p.y-6,12,12)); ctx.shadowBlur=0;
-            drawBossReal(boss);
+            // Paperman Detalhado (Recorte Artesanal)
+            if(!isDead && invencible % 10 < 5) {
+                ctx.save(); ctx.translate(player.x, player.y);
+                ctx.fillStyle="white"; ctx.strokeStyle="black"; ctx.lineWidth=2;
+                ctx.beginPath(); ctx.moveTo(2,5);ctx.lineTo(15,0);ctx.lineTo(38,3);ctx.lineTo(35,25);ctx.lineTo(40,52);ctx.lineTo(20,55);ctx.lineTo(3,50);ctx.lineTo(5,20);ctx.closePath();
+                ctx.fill(); ctx.stroke();
+                ctx.strokeStyle="rgba(0,0,0,0.1)"; ctx.beginPath(); ctx.moveTo(5,15); ctx.lineTo(35,25); ctx.stroke();
+                ctx.fillStyle="black"; ctx.beginPath(); ctx.ellipse(12,18,2,3,0,0,7); ctx.fill(); ctx.beginPath(); ctx.ellipse(28,18,2,3,0,0,7); ctx.fill();
+                ctx.restore();
+            }
+
+            // Tiros Visíveis com Rastro
+            bullets.forEach(b => {
+                ctx.strokeStyle="rgba(100,100,100,0.2)"; b.p.forEach((p,idx)=> {ctx.beginPath();ctx.arc(p.x,p.y,idx,0,7);ctx.stroke();});
+                ctx.fillStyle="white"; ctx.strokeStyle="#444"; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(b.x,b.y,8,0,7); ctx.fill(); ctx.stroke();
+            });
+
+            // Projéteis Boss
+            ctx.fillStyle="#e74c3c"; bossProjectiles.forEach(p => ctx.fillRect(p.x-6,p.y-6,12,12));
+            
+            // Boss Detalhado
+            if(boss) boss.skin.d(boss);
 
             ctx.restore();
-            let s=Math.floor((Date.now()-startTime)/1000); document.getElementById('timeDisplay').innerText=`${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
+            if(gameStarted) {
+                let s = Math.floor((Date.now()-startTime)/1000);
+                document.getElementById('timeDisplay').innerText = `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
+                update();
+            }
+            requestAnimationFrame(draw);
         }
-        function loop(){update();draw();requestAnimationFrame(loop);}
+        draw();
     </script>
 </body>
 </html>
